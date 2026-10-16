@@ -1,0 +1,45 @@
+/* Full-screen setup for phones, laptops, and TVs */
+html,
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #060b19;
+  background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #060b19 75%);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Smooth screen switching that fills the whole screen */
+.screen {
+  display: none;
+  width: 100%;
+  min-height: 100dvh;
+  animation: fadeIn 0.35s ease-out;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hide scrollbars while keeping scroll working */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

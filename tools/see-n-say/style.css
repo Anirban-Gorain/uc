@@ -1,0 +1,198 @@
+/* Shrinking timer bar */
+.timer-fill {
+  transition:
+    width 0.1s linear,
+    background-color 0.3s ease;
+}
+
+.timer-warning {
+  background-color: #ef4444 !important;
+  box-shadow: 0 0 12px #ef4444;
+}
+
+/* Single-line hint box with a clean horizontal scrollbar */
+#bubble-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  height: 50px;
+  min-height: 50px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.6) rgba(15, 23, 42, 0.4);
+}
+
+/* Slim scrollbar for Chrome, Safari, and Edge */
+#bubble-container::-webkit-scrollbar {
+  height: 5px;
+}
+
+#bubble-container::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 9999px;
+}
+
+#bubble-container::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.6);
+  border-radius: 9999px;
+}
+
+#bubble-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.9);
+}
+
+/* Centers the hints when there are only 1 or 2, and scrolls normally when full */
+.hint-bubble:first-child {
+  margin-left: auto;
+}
+
+.hint-bubble:last-child {
+  margin-right: auto;
+}
+
+/* Hint pill badge */
+.hint-bubble {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  color: #f8fafc;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: gentleSlideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hint-label {
+  color: #818cf8;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+/* Soft fade and slide animation */
+@keyframes gentleSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(14px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Smooth Gradient Fade for the top and bottom of the scrolling reviews */
+.mask-vertical-fade {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    black 75%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    black 75%,
+    transparent 100%
+  );
+}
+
+/* Infinite Vertical Scroll Animation */
+@keyframes scrollVertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll-vertical {
+  animation: scrollVertical 35s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-vertical:hover {
+  animation-play-state: paused;
+}
+
+/* Smooth Gradient Fade for the top and bottom of the scrolling reviews */
+.mask-vertical-fade {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    black 75%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    black 75%,
+    transparent 100%
+  );
+}
+
+/* Infinite Vertical Scroll Animation */
+@keyframes scrollVertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll-vertical {
+  animation: scrollVertical 35s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-vertical:hover {
+  animation-play-state: paused;
+}
+
+/* Soft fade on the left and right ends of the hints */
+.mask-horizontal-fade {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}
+
+/* Force the scrollbar under the hints to disappear completely */
+#bubble-container {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+#bubble-container::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

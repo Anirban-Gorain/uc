@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flickr8k Image Picker & ID Collector</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      body {
+        background: #0f172a;
+        color: #f8fafc;
+        margin: 0;
+        padding: 20px;
+      }
+
+      /* Sticky Top Bar */
+      .top-box {
+        position: sticky;
+        top: 10px;
+        z-index: 100;
+        background: #1e293b;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      }
+      .step-btn {
+        background: #2563eb;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+        border: none;
+      }
+      .step-btn:hover {
+        background: #1d4ed8;
+      }
+      .step-btn.done {
+        background: #0284c7;
+      }
+
+      .btn-green {
+        background: #16a34a;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 14px;
+        border: none;
+      }
+      .btn-green:hover {
+        background: #15803d;
+      }
+
+      .btn-filter {
+        background: #334155;
+        color: #e2e8f0;
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        border: 1px solid #475569;
+      }
+      .btn-filter.active {
+        background: #eab308;
+        color: #0f172a;
+        border-color: #eab308;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+      input[type="text"] {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #475569;
+        background: #0f172a;
+        color: #fff;
+        width: 210px;
+        font-size: 14px;
+        outline: none;
+      }
+      input[type="text"]:focus {
+        border-color: #38bdf8;
+      }
+
+      .nav-btn {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: none;
+        background: #334155;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .nav-btn:hover {
+        background: #475569;
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      /* Popup Box for Getting All IDs */
+      .id-modal {
+        background: #1e293b;
+        border: 2px solid #22c55e;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      textarea {
+        width: 100%;
+        height: 220px;
+        background: #0f172a;
+        color: #86efac;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        padding: 12px;
+        font-family: monospace;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      /* Picture Rows */
+      .row-card {
+        background: #1e293b;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 14px;
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        border: 2px solid #334155;
+        transition: 0.15s;
+        cursor: pointer;
+      }
+      .row-card:hover {
+        border-color: #64748b;
+      }
+      .row-card.selected {
+        border-color: #22c55e;
+        background: rgba(22, 163, 74, 0.12);
+      }
+
+      /* Big Tick Button */
+      .tick-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 2px solid #64748b;
+        background: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: transparent;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: 0.15s;
+        user-select: none;
+      }
+      .row-card.selected .tick-box {
+        background: #22c55e;
+        border-color: #22c55e;
+        color: #fff;
+      }
+
+      .row-card img {
+        width: 260px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        background: #0f172a;
+        flex-shrink: 0;
+      }
+      .sentences {
+        flex: 1;
+      }
+      .sentences p {
+        margin: 6px 0;
+        font-size: 15px;
+        color: #e2e8f0;
+      }
+      .file-title {
+        font-size: 14px;
+        color: #38bdf8;
+        font-family: monospace;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <div class="top-box">
+      <div
+        style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center"
+      >
+        <label class="step-btn" id="txt-label">
+          1. Pick Flickr8k.token.txt
+          <input type="file" id="txt-input" accept=".txt" />
+        </label>
+
+        <label class="step-btn" id="dir-label">
+          2. Pick Photo Folder
+          <input
+            type="file"
+            id="dir-input"
+            webkitdirectory
+            directory
+            multiple
+          />
+        </label>
+
+        <input
+          type="text"
+          id="search-box"
+          placeholder="Search word (e.g. dog, bike)..."
+          oninput="filterList()"
+        />
+
+        <button
+          class="btn-filter"
+          id="only-ticked-btn"
+          onclick="toggleOnlyTicked()"
+        >
+          Show Only Ticked
+        </button>
+      </div>
+
+      <div
+        style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"
+      >
+        <button class="nav-btn" id="prev-btn" onclick="changePage(-1)">
+          Prev 50
+        </button>
+        <span id="page-info" style="font-size: 14px; font-weight: 600"
+          >Page 0 / 0</span
+        >
+        <button class="nav-btn" id="next-btn" onclick="changePage(1)">
+          Next 50
+        </button>
+
+        <button class="btn-green" id="get-ids-btn" onclick="showAllIds()">
+          Get All IDs (0)
+        </button>
+      </div>
+    </div>
+
+    <!-- Output Box when "Get All IDs" is clicked -->
+    <div id="id-modal" class="id-modal hidden">
+      <div class="modal-header">
+        <h3 style="margin: 0; color: #4ade80" id="modal-title">
+          Selected Image IDs
+        </h3>
+        <div class="modal-actions">
+          <button class="step-btn" onclick="fillIdBox('filenames')">
+            Filenames (with .jpg)
+          </button>
+          <button class="step-btn" onclick="fillIdBox('rawIds')">
+            Only IDs (no .jpg)
+          </button>
+          <button class="step-btn" onclick="fillIdBox('withSentences')">
+            IDs + Sentences
+          </button>
+          <button class="btn-green" onclick="copyBoxText()">
+            Copy to Clipboard
+          </button>
+          <button class="btn-green" onclick="downloadTxtFile()">
+            Download .txt File
+          </button>
+          <button
+            class="nav-btn"
+            style="background: #dc2626"
+            onclick="clearAllTicks()"
+          >
+            Clear All Ticks
+          </button>
+          <button class="nav-btn" onclick="closeIdModal()">Close</button>
+        </div>
+      </div>
+      <textarea id="id-output" readonly></textarea>
+    </div>
+
+    <!-- Main List of Images -->
+    <div id="list-box">
+      <p
+        style="
+          color: #94a3b8;
+          text-align: center;
+          margin-top: 60px;
+          font-size: 16px;
+        "
+      >
+        Click Button 1 to select <b>Flickr8k.token.txt</b>, then click Button 2
+        to select your <b>Flicker8k_Dataset</b> photo folder.
+      </p>
+    </div>
+
+    <script>
+      let orderedList = [];
+      let filteredList = [];
+      let imageMap = {};
+      let activeUrls = [];
+      let page = 0;
+      const perPage = 50;
+      let showOnlyTicked = false;
+      let currentOutputMode = "filenames";
+
+      // Load saved ticks from browser memory so you never lose your work
+      const savedArray = JSON.parse(
+        localStorage.getItem("flickr8k_selected_ids") || "[]",
+      );
+      const selectedIds = new Set(savedArray);
+      updateTickCounter();
+
+      // Step 1: Read Flickr8k.token.txt in its exact top-to-bottom order
+      document
+        .getElementById("txt-input")
+        .addEventListener("change", async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const text = await file.text();
+          const lines = text.split(/\r?\n/);
+          const tempMap = new Map();
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const [idPart, ...sentenceParts] = line.split(/\t| /);
+            const imgName = idPart.split("#")[0].trim();
+            const sentence = sentenceParts.join(" ").trim();
+            if (!tempMap.has(imgName)) {
+              tempMap.set(imgName, {
+                indexNumber: tempMap.size + 1,
+                name: imgName,
+                sentences: [],
+              });
+            }
+            tempMap.get(imgName).sentences.push(sentence);
+          }
+
+          orderedList = Array.from(tempMap.values());
+          document.getElementById("txt-label").classList.add("done");
+          document.getElementById("txt-label").innerText =
+            `1. Loaded ${orderedList.length} Scenes`;
+          filterList();
+        });
+
+      // Step 2: Connect the local photo folder
+      document.getElementById("dir-input").addEventListener("change", (e) => {
+        const files = e.target.files;
+        imageMap = {};
+        for (const f of files) {
+          imageMap[f.name] = f;
+        }
+        document.getElementById("dir-label").classList.add("done");
+        document.getElementById("dir-label").innerText =
+          `2. Linked ${files.length} Photos`;
+        render();
+      });
+
+      function saveTicks() {
+        localStorage.setItem(
+          "flickr8k_selected_ids",
+          JSON.stringify(Array.from(selectedIds)),
+        );
+        updateTickCounter();
+        if (!document.getElementById("id-modal").classList.contains("hidden")) {
+          fillIdBox(currentOutputMode);
+        }
+      }
+
+      function updateTickCounter() {
+        document.getElementById("get-ids-btn").innerText =
+          `Get All IDs (${selectedIds.size})`;
+      }
+
+      function toggleTick(imgName, cardEl) {
+        if (selectedIds.has(imgName)) {
+          selectedIds.delete(imgName);
+          cardEl.classList.remove("selected");
+        } else {
+          selectedIds.add(imgName);
+          cardEl.classList.add("selected");
+        }
+        saveTicks();
+
+        // If viewing only ticked items and user unticks one, refresh the view
+        if (showOnlyTicked) {
+          filterList(false);
+        }
+      }
+
+      function toggleOnlyTicked() {
+        showOnlyTicked = !showOnlyTicked;
+        const btn = document.getElementById("only-ticked-btn");
+        btn.classList.toggle("active", showOnlyTicked);
+        btn.innerText = showOnlyTicked
+          ? "Showing Only Ticked (Click for All)"
+          : "Show Only Ticked";
+        filterList(true);
+      }
+
+      function filterList(resetPage = true) {
+        const q = document
+          .getElementById("search-box")
+          .value.toLowerCase()
+          .trim();
+        filteredList = orderedList.filter((item) => {
+          if (showOnlyTicked && !selectedIds.has(item.name)) return false;
+          if (!q) return true;
+          return (
+            item.name.toLowerCase().includes(q) ||
+            item.sentences.some((s) => s.toLowerCase().includes(q))
+          );
+        });
+        if (resetPage) page = 0;
+        const maxPage = Math.max(
+          0,
+          Math.ceil(filteredList.length / perPage) - 1,
+        );
+        if (page > maxPage) page = maxPage;
+        render();
+      }
+
+      function changePage(dir) {
+        const maxPage = Math.max(
+          0,
+          Math.ceil(filteredList.length / perPage) - 1,
+        );
+        page = Math.max(0, Math.min(maxPage, page + dir));
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function render() {
+        const box = document.getElementById("list-box");
+        if (orderedList.length === 0) return;
+
+        // Clean up old photo links in memory so the laptop stays fast
+        activeUrls.forEach((u) => URL.revokeObjectURL(u));
+        activeUrls = [];
+
+        const maxPage = Math.max(1, Math.ceil(filteredList.length / perPage));
+        document.getElementById("page-info").innerText =
+          `Page ${page + 1} of ${maxPage}`;
+        document.getElementById("prev-btn").disabled = page === 0;
+        document.getElementById("next-btn").disabled = page >= maxPage - 1;
+
+        box.innerHTML = "";
+
+        if (filteredList.length === 0) {
+          box.innerHTML = `<p style="color:#94a3b8; text-align:center; margin-top:40px;">No matching pictures found.</p>`;
+          return;
+        }
+
+        const slice = filteredList.slice(page * perPage, (page + 1) * perPage);
+
+        slice.forEach((item) => {
+          const fileObj = imageMap[item.name];
+          let imgUrl = "";
+          if (fileObj) {
+            imgUrl = URL.createObjectURL(fileObj);
+            activeUrls.push(imgUrl);
+          }
+
+          const isTicked = selectedIds.has(item.name);
+
+          const card = document.createElement("div");
+          card.className = "row-card" + (isTicked ? " selected" : "");
+          card.onclick = () => toggleTick(item.name, card);
+
+          card.innerHTML = `
+          <div class="tick-box">✓</div>
+          <img src="${imgUrl}" alt="${item.name}">
+          <div class="sentences">
+            <div class="file-title">#${item.indexNumber} — ID: ${item.name}</div>
+            ${item.sentences.map((s, i) => `<p><b>${i + 1}.</b>${s}</p>`).join("")}
+          </div>
+        `;
+          box.appendChild(card);
+        });
+      }
+
+      function showAllIds() {
+        const modal = document.getElementById("id-modal");
+        modal.classList.remove("hidden");
+        fillIdBox(currentOutputMode);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function closeIdModal() {
+        document.getElementById("id-modal").classList.add("hidden");
+      }
+
+      function fillIdBox(mode) {
+        currentOutputMode = mode;
+        const list = Array.from(selectedIds);
+        document.getElementById("modal-title").innerText =
+          `Selected Image IDs (${list.length} total)`;
+        const out = document.getElementById("id-output");
+
+        if (list.length === 0) {
+          out.value =
+            "You have not ticked any images yet. Click on any row below to tick it!";
+          return;
+        }
+
+        if (mode === "filenames") {
+          out.value = list.join("\n");
+        } else if (mode === "rawIds") {
+          out.value = list
+            .map((name) => name.replace(/\.[^/.]+$/, ""))
+            .join("\n");
+        } else if (mode === "withSentences") {
+          const lookup = new Map(orderedList.map((item) => [item.name, item]));
+          out.value = list
+            .map((name, idx) => {
+              const item = lookup.get(name);
+              const firstSentence =
+                item && item.sentences[0] ? item.sentences[0] : "";
+              return `${idx + 1}. ${name} | ${firstSentence}`;
+            })
+            .join("\n");
+        }
+      }
+
+      function copyBoxText() {
+        const out = document.getElementById("id-output");
+        out.select();
+        navigator.clipboard.writeText(out.value);
+        alert(`Copied ${selectedIds.size} IDs to your clipboard!`);
+      }
+
+      function downloadTxtFile() {
+        const text = document.getElementById("id-output").value;
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "my_selected_image_ids.txt";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function clearAllTicks() {
+        if (!confirm("Are you sure you want to untick all selected images?"))
+          return;
+        selectedIds.clear();
+        saveTicks();
+        filterList(false);
+      }
+    </script>
+  </body>
+</html>
