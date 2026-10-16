@@ -104,27 +104,70 @@ function getCombinedHints(descriptions) {
     );
   });
 
-  let bestSingles = Object.keys(singleVoteBox)
+  // Sort the single words by popularity
+  let sortedSingles = Object.keys(singleVoteBox)
     .filter((w) => singleVoteBox[w] >= 2 && allowedMachineWords.has(w))
     .sort((a, b) => singleVoteBox[b] - singleVoteBox[a]);
 
-  let bestPhrases = Object.keys(phraseVoteBox)
-    .filter((p) => phraseVoteBox[p] >= 2)
-    .sort((a, b) => phraseVoteBox[b] - phraseVoteBox[a]);
-
-  // Backup plan if sentences are very different
-  if (bestSingles.length === 0) {
-    bestSingles = Object.keys(singleVoteBox).sort(
+  if (sortedSingles.length === 0) {
+    sortedSingles = Object.keys(singleVoteBox).sort(
       (a, b) => singleVoteBox[b] - singleVoteBox[a],
     );
   }
-  if (bestPhrases.length === 0) {
-    bestPhrases = bestSingles;
+
+  // Pick top 3 singles, but block words that look too similar (like "jump" and "jumping")
+  let finalSingles = [];
+  for (let w of sortedSingles) {
+    let isTooSimilar = finalSingles.some(
+      (existing) =>
+        existing.includes(w) ||
+        w.includes(existing) ||
+        (existing.length > 3 && w.substring(0, 4) === existing.substring(0, 4)),
+    );
+
+    if (!isTooSimilar) finalSingles.push(w);
+    if (finalSingles.length === 3) break;
+  }
+
+  // Sort the phrases by popularity
+  let sortedPhrases = Object.keys(phraseVoteBox)
+    .filter((p) => phraseVoteBox[p] >= 2)
+    .sort((a, b) => phraseVoteBox[b] - phraseVoteBox[a]);
+
+  if (sortedPhrases.length === 0) {
+    sortedPhrases = Object.keys(phraseVoteBox).sort(
+      (a, b) => phraseVoteBox[b] - phraseVoteBox[a],
+    );
+  }
+
+  // Pick top 2 phrases, but block them if they use words we already picked
+  let finalPhrases = [];
+  for (let p of sortedPhrases) {
+    let wordsInPhrase = p.split(" ");
+
+    let usesExistingSingleWord = finalSingles.some((single) =>
+      wordsInPhrase.includes(single),
+    );
+    let isTooSimilarToAnotherPhrase = finalPhrases.some(
+      (existing) =>
+        existing.includes(wordsInPhrase[0]) ||
+        existing.includes(wordsInPhrase[1]),
+    );
+
+    if (!usesExistingSingleWord && !isTooSimilarToAnotherPhrase) {
+      finalPhrases.push(p);
+    }
+    if (finalPhrases.length === 2) break;
+  }
+
+  // Just in case the filter blocked too much, use backups
+  if (finalPhrases.length < 2) {
+    finalPhrases = sortedPhrases.slice(0, 2);
   }
 
   return {
-    singles: bestSingles.slice(0, 3),
-    phrases: bestPhrases.slice(0, 2),
+    singles: finalSingles,
+    phrases: finalPhrases,
   };
 }
 
