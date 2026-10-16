@@ -170,16 +170,20 @@ function showResults() {
 
   // Generate Bar Graph
   const graphContainer = document.getElementById("progress-graph");
-  graphContainer.innerHTML = stats.history
-    .map(
-      (score) => `
-    <div class="flex-1 flex flex-col justify-end items-center group relative h-full">
-      <div class="w-full max-w-[2rem] bg-indigo-500/80 hover:bg-indigo-400 rounded-t-sm transition-all duration-300" style="height: ${Math.max(5, score)}%"></div>
-      <span class="absolute -top-6 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 px-2 py-1 rounded shadow-md">${score}%</span>
-    </div>
-  `,
-    )
-    .join("");
+  if (graphContainer) {
+    graphContainer.innerHTML = stats.history
+      .map(
+        (score) => `
+      <div class="flex-1 flex flex-col justify-end items-center group relative h-full w-full">
+        <!-- The Bar -->
+        <div class="w-full max-w-[24px] sm:max-w-[32px] bg-indigo-500 hover:bg-indigo-400 rounded-t-md transition-all duration-500" style="height: ${Math.max(5, score)}%;"></div>
+        <!-- Tooltip -->
+        <span class="absolute -top-7 text-[10px] font-bold text-white bg-slate-800 border border-slate-600 px-2 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">${score}%</span>
+      </div>
+    `,
+      )
+      .join("");
+  }
 
   // --- SCORE COUNTING ANIMATION ---
   const scoreEl = document.getElementById("final-score");

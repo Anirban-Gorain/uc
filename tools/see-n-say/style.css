@@ -10,7 +10,7 @@
   box-shadow: 0 0 12px #ef4444;
 }
 
-/* Single-line hint box with a clean horizontal scrollbar */
+/* Clean, hidden scrollbar for the hint box */
 #bubble-container {
   display: flex;
   flex-wrap: nowrap;
@@ -22,28 +22,14 @@
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
-  padding-bottom: 6px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(99, 102, 241, 0.6) rgba(15, 23, 42, 0.4);
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-/* Slim scrollbar for Chrome, Safari, and Edge */
 #bubble-container::-webkit-scrollbar {
-  height: 5px;
-}
-
-#bubble-container::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.4);
-  border-radius: 9999px;
-}
-
-#bubble-container::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.6);
-  border-radius: 9999px;
-}
-
-#bubble-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.9);
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Centers the hints when there are only 1 or 2, and scrolls normally when full */
@@ -93,80 +79,6 @@
   }
 }
 
-/* Smooth Gradient Fade for the top and bottom of the scrolling reviews */
-.mask-vertical-fade {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 25%,
-    black 75%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 25%,
-    black 75%,
-    transparent 100%
-  );
-}
-
-/* Infinite Vertical Scroll Animation */
-@keyframes scrollVertical {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-50%);
-  }
-}
-
-.animate-scroll-vertical {
-  animation: scrollVertical 35s linear infinite;
-  will-change: transform;
-}
-
-.animate-scroll-vertical:hover {
-  animation-play-state: paused;
-}
-
-/* Smooth Gradient Fade for the top and bottom of the scrolling reviews */
-.mask-vertical-fade {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 25%,
-    black 75%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 25%,
-    black 75%,
-    transparent 100%
-  );
-}
-
-/* Infinite Vertical Scroll Animation */
-@keyframes scrollVertical {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-50%);
-  }
-}
-
-.animate-scroll-vertical {
-  animation: scrollVertical 35s linear infinite;
-  will-change: transform;
-}
-
-.animate-scroll-vertical:hover {
-  animation-play-state: paused;
-}
-
 /* Soft fade on the left and right ends of the hints */
 .mask-horizontal-fade {
   -webkit-mask-image: linear-gradient(
@@ -185,14 +97,44 @@
   );
 }
 
-/* Force the scrollbar under the hints to disappear completely */
-#bubble-container {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+/* Smooth Gradient Fade for the top and bottom of the scrolling reviews */
+.mask-vertical-fade {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    black 75%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 25%,
+    black 75%,
+    transparent 100%
+  );
 }
 
-#bubble-container::-webkit-scrollbar {
+/* Infinite Vertical Scroll Animation */
+@keyframes scrollVertical {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll-vertical {
+  animation: scrollVertical 35s linear infinite;
+  will-change: transform;
+}
+
+.animate-scroll-vertical:hover {
+  animation-play-state: paused;
+}
+
+/* Force inactive screens to completely disappear, overriding Tailwind flex utilities */
+.screen:not(.active) {
   display: none !important;
-  width: 0 !important;
-  height: 0 !important;
 }
