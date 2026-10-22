@@ -176,7 +176,7 @@ function showResults() {
         (score) => `
       <div class="flex-1 flex flex-col justify-end items-center group relative h-full w-full">
         <!-- The Bar -->
-        <div class="w-full max-w-[24px] sm:max-w-[32px] bg-indigo-500 hover:bg-indigo-400 rounded-t-md transition-all duration-500" style="height: ${Math.max(5, score)}%;"></div>
+        <div class="w-full max-w-[24px] sm:max-w-[32px] bg-orange-500 hover:bg-orange-400 rounded-t-md transition-all duration-500" style="height: ${Math.max(5, score)}%;"></div>
         <!-- Tooltip -->
         <span class="absolute -top-7 text-[10px] font-bold text-white bg-slate-800 border border-slate-600 px-2 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">${score}%</span>
       </div>
@@ -189,7 +189,7 @@ function showResults() {
   const scoreEl = document.getElementById("final-score");
   scoreEl.innerText = "0%";
   scoreEl.className =
-    "text-4xl sm:text-5xl lg:text-6xl font-extrabold text-indigo-400 tabular-nums";
+    "text-4xl sm:text-5xl lg:text-6xl font-extrabold text-orange-400 tabular-nums";
 
   let currentScore = 0;
   const scoreInterval = setInterval(() => {
@@ -198,10 +198,10 @@ function showResults() {
       scoreEl.innerText = `${totalScore}%`;
       // Final color switch
       if (totalScore < 50)
-        scoreEl.classList.replace("text-indigo-400", "text-rose-500");
+        scoreEl.classList.replace("text-orange-400", "text-rose-500");
       else if (totalScore < 80)
-        scoreEl.classList.replace("text-indigo-400", "text-yellow-400");
-      else scoreEl.classList.replace("text-indigo-400", "text-green-400");
+        scoreEl.classList.replace("text-orange-400", "text-yellow-400");
+      else scoreEl.classList.replace("text-orange-400", "text-green-400");
     } else {
       currentScore += Math.max(1, Math.ceil((totalScore - currentScore) / 10));
       scoreEl.innerText = `${currentScore}%`;
@@ -249,7 +249,7 @@ function showResults() {
           <span class="font-bold text-xs px-3 py-1 rounded-full ${scoreColor}">${ans.score}% Match</span>
         </div>
         <p class="text-base text-slate-200 mb-2 leading-relaxed"><strong>You wrote:</strong> ${highlightedText}</p>
-        <p class="text-sm text-indigo-300/80"><strong>Possible answer:</strong> ${ans.bestTarget}</p>
+        <p class="text-sm text-orange-300/80"><strong>Possible answer:</strong> ${ans.bestTarget}</p>
       </div>
     `;
     listEl.appendChild(item);

@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="../../assets/css/global.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body class="text-slate-100 bg-[#060b19]">
+  <body class="text-slate-100 bg-[#0d0a06]">
     <!-- ==========================================
        SCREEN 1: START VIEW (Split Screen Layout)
        ========================================== -->
@@ -39,7 +39,7 @@
           class="group text-xs font-semibold px-2 sm:px-4 py-2 cursor-pointer"
         >
           <span
-            class="text-xs lg:text-sm font-bold tracking-widest uppercase text-indigo-400 leading-tight block"
+            class="text-xs lg:text-sm font-bold tracking-widest uppercase text-orange-400 leading-tight block"
             >Underdog <br class="sm:hidden" />Communication</span
           >
         </a>
@@ -77,7 +77,7 @@
             class="flex flex-row items-center justify-center lg:justify-start gap-4 lg:gap-5 mb-5 lg:mb-6"
           >
             <div
-              class="w-14 p-1 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 to-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/40 shrink-0 overflow-hidden p-0"
+              class="w-14 p-1 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-500 to-amber-200 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/40 shrink-0 overflow-hidden p-0"
             >
               <img
                 src="../../assets/static-images/logo.png"
@@ -103,7 +103,7 @@
           >
             <button
               onclick="startGame()"
-              class="w-full sm:w-56 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold py-3.5 lg:py-4 rounded-2xl shadow-lg shadow-indigo-500/30 transition active:scale-95 text-sm lg:text-base"
+              class="w-full sm:w-56 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-bold py-3.5 lg:py-4 rounded-2xl shadow-lg shadow-orange-500/30 transition active:scale-95 text-sm lg:text-base"
             >
               Start Now
             </button>
@@ -117,7 +117,7 @@
 
           <p
             id="loading-text"
-            class="text-xs sm:text-sm text-indigo-300 mt-4 hidden animate-pulse"
+            class="text-xs sm:text-sm text-orange-300 mt-4 hidden animate-pulse"
           >
             Loading your scenes...
           </p>
@@ -834,7 +834,7 @@
           >
           <span
             id="scene-counter"
-            class="text-lg lg:text-2xl font-bold text-indigo-400"
+            class="text-lg lg:text-2xl font-bold text-orange-400"
             >1 / 10</span
           >
         </div>
@@ -855,7 +855,7 @@
       <div class="w-full h-1.5 bg-slate-800/80 shrink-0">
         <div
           id="timer-bar"
-          class="timer-fill h-full bg-indigo-500 w-full"
+          class="timer-fill h-full bg-orange-500 w-full"
         ></div>
       </div>
 
@@ -903,11 +903,11 @@
             rows="2"
             placeholder="Type your sentence here..."
             autocomplete="off"
-            class="w-full bg-slate-900/80 border border-slate-700/80 focus:border-indigo-500 rounded-2xl p-3 lg:p-5 text-white text-sm sm:text-base lg:text-lg outline-none transition-colors resize-none mb-2.5 lg:mb-5"
+            class="w-full bg-slate-900/80 border border-slate-700/80 focus:border-orange-500 rounded-2xl p-3 lg:p-5 text-white text-sm sm:text-base lg:text-lg outline-none transition-colors resize-none mb-2.5 lg:mb-5"
           ></textarea>
           <button
             onclick="submitAnswer()"
-            class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 lg:py-5 rounded-2xl shadow-lg shadow-indigo-600/20 transition active:scale-95 text-sm sm:text-base lg:text-lg"
+            class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-bold py-3 lg:py-5 rounded-2xl shadow-lg shadow-orange-500/20 transition active:scale-95 text-sm sm:text-base lg:text-lg"
           >
             Submit Answer
           </button>
@@ -926,7 +926,7 @@
         >
           <div class="text-center md:text-left w-full md:w-auto">
             <span
-              class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-400 mb-1 block"
+              class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-orange-400 mb-1 block"
               >Round Complete</span
             >
             <h2
@@ -945,7 +945,7 @@
             </p>
             <h3
               id="final-score"
-              class="text-5xl lg:text-6xl font-extrabold text-indigo-400 tabular-nums leading-none"
+              class="text-5xl lg:text-6xl font-extrabold text-orange-400 tabular-nums leading-none"
             >
               0%
             </h3>
@@ -1018,7 +1018,7 @@
         <div class="text-center pb-6">
           <button
             onclick="startGame()"
-            class="w-full sm:w-72 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg transition active:scale-95 text-lg"
+            class="w-full sm:w-72 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-bold py-4 px-8 rounded-2xl shadow-lg transition active:scale-95 text-lg"
           >
             Play Again
           </button>

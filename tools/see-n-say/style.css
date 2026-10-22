@@ -6,8 +6,8 @@
 }
 
 .timer-warning {
-  background-color: #ef4444 !important;
-  box-shadow: 0 0 12px #ef4444;
+  background-color: #dc2626 !important;
+  box-shadow: 0 0 12px #f97316;
 }
 
 /* Clean, hidden scrollbar for the hint box */
@@ -47,20 +47,20 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(99, 102, 241, 0.5);
-  color: #f8fafc;
+  background: rgba(20, 12, 4, 0.95);
+  border: 1px solid rgba(249, 115, 22, 0.5);
+  color: #fff7ed;
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
   animation: gentleSlideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .hint-label {
-  color: #818cf8;
+  color: #fb923c;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
