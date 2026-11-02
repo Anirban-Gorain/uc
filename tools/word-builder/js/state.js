@@ -61,18 +61,13 @@ export function loadSavedCameraState() {
 }
 
 export function isPortraitMode() {
-  return window.innerHeight > window.innerWidth && window.innerWidth <= 900;
+  // Native orientation is used directly (no forced 90deg rotation transform)
+  return false;
 }
 
 export function getNormalizedPointer(event) {
   const pointer = event.touches ? event.touches[0] : event;
-  if (!isPortraitMode()) {
-    return { x: pointer.clientX, y: pointer.clientY };
-  }
-  return {
-    x: pointer.clientY,
-    y: window.innerWidth - pointer.clientX,
-  };
+  return { x: pointer.clientX, y: pointer.clientY };
 }
 
 export function getIslandMetrics(island) {

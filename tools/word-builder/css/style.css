@@ -8,18 +8,35 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
 }
 
 html,
 body {
   width: 100%;
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
+  overscroll-behavior: none;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
   user-select: none;
   -webkit-user-select: none;
+}
+
+/* Eliminate browser link ghost-dragging on images and svgs */
+img,
+svg,
+.slot-building-img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* Remove default focus outline on click/tap while keeping keyboard focus accessibility */
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* While panning, lock cursor across every element on the entire page */
@@ -94,11 +111,16 @@ body {
   color: #f8fafc;
   border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 0.6rem 1rem;
-  min-width: 2.5rem;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  touch-action: manipulation;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
@@ -128,11 +150,14 @@ body {
 
 .viewport {
   width: 100vw;
+  width: 100dvw;
   height: 100vh;
+  height: 100dvh;
   position: relative;
   overflow: hidden;
   cursor: grab;
   touch-action: none;
+  overscroll-behavior: none;
 }
 
 .world {
@@ -372,16 +397,7 @@ body {
 }
 
 /* Mobile Portrait Override: Rotate the screen along with the rest of the app */
-@media screen and (orientation: portrait) and (max-width: 900px) {
-  .building-screen {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100vh !important;
-    height: 100vw !important;
-    transform: translate(-50%, -50%) rotate(90deg);
-    transform-origin: center center;
-  }
+/* Native portrait layout enabled (forced 90deg CSS rotation removed) */
 }
 
 /* ==========================================================================
@@ -492,50 +508,14 @@ body {
    Hardware Portrait Override: Synchronize Clouds with 90deg Landscape Rotation
    ========================================================================== */
 
-@media screen and (orientation: portrait) and (max-width: 900px) {
-  body {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  /* Rotate viewport, HUD, AND cloud curtain together so clouds slide across the visual landscape */
-  .viewport,
-  .map-hud,
-  .cloud-curtain {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100vh !important;
-    height: 100vw !important;
-    transform: translate(-50%, -50%) rotate(90deg);
-    transform-origin: center center;
-  }
+/* Native portrait layout enabled (forced 90deg CSS rotation removed) */
 }
 
 /* ==========================================================================
    Hardware Portrait Override: Force Landscape via CSS Transform
    ========================================================================== */
 
-@media screen and (orientation: portrait) and (max-width: 900px) {
-  body {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .viewport,
-  .map-hud {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100vh !important;
-    height: 100vw !important;
-    transform: translate(-50%, -50%) rotate(90deg);
-    transform-origin: center center;
-  }
+/* Native portrait layout enabled (forced 90deg CSS rotation removed) */
 }
 
 /* ========================================================

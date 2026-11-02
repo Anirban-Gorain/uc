@@ -229,6 +229,11 @@ function handlePointerDown(e) {
 }
 
 function handlePointerMove(e) {
+  // Prevent native mobile page bounce / pull-to-refresh while interacting with the map
+  if (e.cancelable && (camera.isDragging || (e.touches && e.touches.length >= 1))) {
+    e.preventDefault();
+  }
+
   // Mobile touchscreen two-finger pinch-to-zoom
   if (e.touches && e.touches.length === 2) {
     const t1 = e.touches[0];
@@ -278,9 +283,9 @@ export function registerCameraEvents() {
 
   // Mobile Touch Drag & Pinch
   dom.viewport.addEventListener("touchstart", handlePointerDown, {
-    passive: true,
+    passive: false,
   });
-  window.addEventListener("touchmove", handlePointerMove, { passive: true });
+  window.addEventListener("touchmove", handlePointerMove, { passive: false });
   window.addEventListener("touchend", handlePointerUp);
   window.addEventListener("touchcancel", handlePointerUp);
 
