@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluency City | Interactive Map</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Map Navigation & Viewport Controls -->
+    <header class="map-hud">
+      <div class="hud-actions">
+        <button
+          type="button"
+          id="zoomInBtn"
+          class="hud-btn"
+          aria-label="Zoom In"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          id="zoomOutBtn"
+          class="hud-btn"
+          aria-label="Zoom Out"
+        >
+          −
+        </button>
+        <button type="button" id="fitMapBtn" class="hud-btn hud-btn-primary">
+          Fit Map
+        </button>
+      </div>
+    </header>
+
+    <!-- Viewport Canvas Container -->
+    <main
+      id="viewport"
+      class="viewport"
+      role="region"
+      aria-label="Interactive Map Viewport"
+    >
+      <div id="world" class="world">
+        <!-- Layer 1: Island Terrain Surface -->
+        <div id="islandLayer" class="island-layer" aria-hidden="true">
+          <div class="sand-coast"></div>
+          <div class="grass-lawn"></div>
+        </div>
+
+        <!-- Layer 2: Road & Transit Network (SVG Vector Canvas) -->
+        <svg
+          id="roadLayer"
+          class="road-layer"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <!-- Rendered dynamically by the road sub-system -->
+        </svg>
+
+        <!-- Layer 3: Building Slots & Structural Entities -->
+        <div id="buildingLayer" class="building-layer">
+          <!-- Rendered dynamically by the layout registry -->
+        </div>
+      </div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

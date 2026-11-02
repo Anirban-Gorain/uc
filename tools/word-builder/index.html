@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Fluency City | Interactive Archipelago</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/wordScreen.css" />
+  </head>
+  <body>
+    <!-- Game HUD Controls -->
+    <header class="map-hud">
+      <div class="hud-actions">
+        <button
+          type="button"
+          id="zoomInBtn"
+          class="hud-btn"
+          aria-label="Zoom In"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          id="zoomOutBtn"
+          class="hud-btn"
+          aria-label="Zoom Out"
+        >
+          -
+        </button>
+        <button type="button" id="fitMapBtn" class="hud-btn hud-btn-primary">
+          Fit Map
+        </button>
+      </div>
+    </header>
+
+    <!-- Map Viewport -->
+    <main
+      id="viewport"
+      class="viewport"
+      role="region"
+      aria-label="Interactive Map Viewport"
+    >
+      <div id="world" class="world">
+        <!-- Layer 1: Island Terrains -->
+        <div id="islandLayer" class="island-layer" aria-hidden="true"></div>
+
+        <!-- Layer 1.5: Island Grid Matrices -->
+        <div id="gridOverlay" class="grid-overlay" aria-hidden="true"></div>
+
+        <!-- Layer 2: Vector Roads & Cross-Water Bridges -->
+        <svg
+          id="roadLayer"
+          class="road-layer"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        ></svg>
+
+        <!-- Layer 3: Interactive Building Parcels -->
+                <div id="buildingLayer" class="building-layer"></div>
+
+        <!-- Layer 3.8: Ambient Sky & Atmospheric Life (Drifting Shadows & Birds) -->
+        <div id="ambientSkyLayer" class="ambient-sky-layer" aria-hidden="true"></div>
+      </div>
+    </main>
+
+    <!-- Layer 3.5: Building Screen-->
+    <section
+      id="buildingScreen"
+      class="building-screen hidden"
+      aria-label="Building Detail View"
+    >
+      <div class="screen-content">
+        <h1 id="screenBuildingTitle" class="screen-title">Sample Screen</h1>
+        <p id="screenBuildingSubtitle" class="screen-subtitle">
+          Building details will appear here
+        </p>
+        <button type="button" id="backToMapBtn" class="hud-btn hud-btn-primary">
+          â† Back to Map
+        </button>
+      </div>
+    </section>
+
+    <!-- Layer 4: Screen Transition Cloud Curtain -->
+    <div id="cloudCurtain" class="cloud-curtain" aria-hidden="true">
+      <div class="cloud-bank cloud-bank-left">
+        <div class="cloud-puff puff-1"></div>
+        <div class="cloud-puff puff-2"></div>
+        <div class="cloud-puff puff-3"></div>
+      </div>
+      <div class="cloud-bank cloud-bank-right">
+        <div class="cloud-puff puff-4"></div>
+        <div class="cloud-puff puff-5"></div>
+        <div class="cloud-puff puff-6"></div>
+      </div>
+    </div>
+
+    <!-- ES Module Application Entry -->
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

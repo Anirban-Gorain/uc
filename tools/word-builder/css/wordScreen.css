@@ -1,0 +1,345 @@
+/* Master Screen Backdrop */
+.screen-overlay {
+  position: fixed;
+  inset: 0;
+  background: #09090b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Netflix-Style Modal Box */
+.word-modal {
+  width: 92vw;
+  max-width: 1250px;
+  height: 88vh;
+  background: #111114;
+  border-radius: 14px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.95);
+  border: 1px solid #222227;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(18, 18, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f4f4f5;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #ff5a00;
+  border-color: #ff5a00;
+  color: #ffffff;
+  transform: scale(1.06);
+}
+
+/* LEFT PANEL (Floors Navigation) */
+.modal-left {
+  width: 26%;
+  background: #0d0d10;
+  padding: 24px;
+  overflow-y: auto;
+  border-right: 1px solid #1f1f24;
+  flex-shrink: 0;
+}
+
+.levels-title {
+  color: #ff5a00;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.levels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.level-card {
+  background: #17171c;
+  padding: 16px;
+  border-radius: 8px;
+  color: #a1a1aa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.level-card:hover:not(.locked) {
+  background: #202027;
+  color: #ffffff;
+  border-color: rgba(255, 90, 0, 0.4);
+}
+
+.level-card.active {
+  background: #221a16;
+  border-color: #ff5a00;
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 #ff5a00;
+}
+
+.level-card.completed {
+  border-right: 3px solid #22c55e;
+}
+
+.level-card.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #111114;
+  border-color: #1a1a20;
+}
+
+.level-card.locked:hover {
+  background: #111114;
+  color: #71717a;
+}
+
+/* RIGHT PANEL (Cinema Stage) */
+.modal-right {
+  width: 74%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.3s ease;
+  overflow-y: auto;
+}
+
+.cinema-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 13, 0.94) 0%,
+    rgba(10, 10, 13, 0.72) 45%,
+    rgba(10, 10, 13, 0.96) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+.modal-content-stack {
+  position: relative;
+  z-index: 2;
+  padding: 44px 48px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.top-header-block {
+  margin-bottom: 24px;
+}
+
+.building-hook-top {
+  color: #ff5a00;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  margin-bottom: 6px;
+}
+
+.building-title-top {
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin: 0;
+  line-height: 1.1;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+}
+
+.mission-block {
+  margin-bottom: 26px;
+  max-width: 90%;
+}
+
+.mission-label {
+  color: #71717a;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.mission-description {
+  color: #d4d4d8;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 400;
+}
+
+.word-tags-block {
+  margin-bottom: auto;
+}
+
+.word-tags-title {
+  color: #71717a;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.word-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.word-pill {
+  background: rgba(255, 90, 0, 0.12);
+  border: 1px solid rgba(255, 90, 0, 0.45);
+  color: #ff8c42;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease;
+}
+
+.word-pill:hover {
+  background: #ff5a00;
+  color: #ffffff;
+  border-color: #ff5a00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 90, 0, 0.4);
+}
+
+.action-stage {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary-orange {
+  background: #ff5a00;
+  color: #ffffff;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px rgba(255, 90, 0, 0.3);
+}
+
+.btn-primary-orange:hover {
+  background: #ff6f1f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(255, 90, 0, 0.5);
+}
+
+.loading-pulse {
+  background: #27272a !important;
+  color: #a1a1aa !important;
+  box-shadow: none !important;
+  animation: pulse-orange 1s infinite alternate;
+}
+
+@keyframes pulse-orange {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.verify-cluster {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.verify-cluster.hidden {
+  display: none;
+}
+
+.code-field {
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 13px 18px;
+  font-size: 15px;
+  width: 220px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.code-field:focus {
+  border-color: #ff5a00;
+}
+
+.btn-verify {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #ffffff;
+  padding: 13px 22px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-verify:hover {
+  background: #3f3f46;
+  border-color: #71717a;
+}
+
+.status-callout {
+  font-size: 15px;
+  font-weight: 700;
+}

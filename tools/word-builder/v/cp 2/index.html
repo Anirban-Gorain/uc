@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Fluency City | Interactive Archipelago</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Map HUD Controls -->
+    <header class="map-hud">
+      <div class="hud-brand">
+        <h1 class="brand-title">Fluency City</h1>
+        <span class="brand-subtitle">Archipelago World View</span>
+      </div>
+
+      <div class="hud-actions">
+        <button
+          type="button"
+          id="toggleGridBtn"
+          class="hud-btn"
+          title="Toggle Grid Overlay"
+        >
+          Grid: ON
+        </button>
+        <button
+          type="button"
+          id="zoomInBtn"
+          class="hud-btn"
+          aria-label="Zoom In"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          id="zoomOutBtn"
+          class="hud-btn"
+          aria-label="Zoom Out"
+        >
+          −
+        </button>
+        <button type="button" id="fitMapBtn" class="hud-btn hud-btn-primary">
+          Fit Map
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main
+      id="viewport"
+      class="viewport"
+      role="region"
+      aria-label="Interactive Map Viewport"
+    >
+      <div id="world" class="world">
+        <!-- Layer 1: Island Terrains -->
+        <div id="islandLayer" class="island-layer" aria-hidden="true"></div>
+
+        <!-- Layer 1.5: Island Grid Matrices -->
+        <div id="gridOverlay" class="grid-overlay" aria-hidden="true"></div>
+
+        <!-- Layer 2: Vector Roads & Cross-Water Bridges -->
+        <svg
+          id="roadLayer"
+          class="road-layer"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        ></svg>
+
+        <!-- Layer 3: Interactive Building Parcels -->
+        <div id="buildingLayer" class="building-layer"></div>
+      </div>
+    </main>
+
+    <!-- Layer 4: Screen Transition Cloud Curtain -->
+    <div id="cloudCurtain" class="cloud-curtain" aria-hidden="true">
+      <div class="cloud-bank cloud-bank-left">
+        <div class="cloud-puff puff-1"></div>
+        <div class="cloud-puff puff-2"></div>
+        <div class="cloud-puff puff-3"></div>
+      </div>
+      <div class="cloud-bank cloud-bank-right">
+        <div class="cloud-puff puff-4"></div>
+        <div class="cloud-puff puff-5"></div>
+        <div class="cloud-puff puff-6"></div>
+      </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

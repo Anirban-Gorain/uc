@@ -1,0 +1,1170 @@
+/* ==========================================================================
+   Base Reset & Environment
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* While panning, lock cursor across every element on the entire page */
+body.is-panning,
+body.is-panning * {
+  cursor: grabbing !important;
+}
+
+/* ==========================================================================
+   Layer 0: Natural Deep Ocean with Broad Fluid Ambient Caustics
+   (No white box tiles, no floating round circle dots)
+   ========================================================================== */
+
+body {
+  background-color: var(--ocean-color, #2779b6);
+  background:
+    radial-gradient(ellipse 1200px 800px at 20% 30%, rgba(56, 161, 219, 0.45) 0%, transparent 70%),
+    radial-gradient(ellipse 1400px 900px at 80% 70%, rgba(30, 114, 175, 0.5) 0%, transparent 70%),
+    linear-gradient(135deg, #1b5b8d 0%, #2578b5 45%, #2a87ca 75%, #1e649a 100%);
+  background-attachment: fixed;
+}
+
+/* ==========================================================================
+   HUD & UI Elements
+   ========================================================================== */
+
+.map-hud {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.hud-brand {
+  pointer-events: auto;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.brand-title {
+  color: #f8fafc;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-subtitle {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.hud-actions {
+  pointer-events: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hud-btn {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.6rem 1rem;
+  min-width: 2.5rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hud-btn:hover {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.hud-btn:active {
+  transform: translateY(1px);
+}
+
+.hud-btn-primary {
+  background: #2563eb;
+  border-color: #3b82f6;
+}
+
+.hud-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+/* ==========================================================================
+   Viewport & World Canvas
+   ========================================================================== */
+
+.viewport {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--world-width);
+  height: var(--world-height);
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* ==========================================================================
+   Layer 1: Island Terrains
+   ========================================================================== */
+
+.island-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.island-entity {
+  position: absolute;
+}
+
+.sand-coast {
+  position: absolute;
+  inset: 0;
+  background-color: var(--sand-color, #f7d794);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+}
+
+.grass-lawn {
+  position: absolute;
+  background-color: var(--grass-color, #55b85a);
+}
+
+.island-badge {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  color: #f8fafc;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ==========================================================================
+   Layer 1.5: Grid Overlays
+   ========================================================================== */
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.grid-overlay.hidden {
+  opacity: 0;
+}
+
+.island-grid-container {
+  position: absolute;
+  display: grid;
+}
+
+.grid-cell-guide {
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: monospace;
+}
+
+/* ==========================================================================
+   Layer 2: Road & Bridge Canvas (SVG)
+   ========================================================================== */
+
+.road-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--world-width);
+  height: var(--world-height);
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Layer 3: Building Slots & Parcels
+   ========================================================================== */
+
+.building-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.map-slot {
+  pointer-events: auto;
+  position: absolute;
+  box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* backdrop-filter: blur(8px); */
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  z-index: 10;
+}
+
+.map-slot:hover {
+  transform: scale(1.01);
+}
+
+.slot-level-tag {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.slot-main-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 2px 0 4px 0;
+  white-space: nowrap;
+}
+
+.slot-power-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #facc15;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.map-slot.has-image {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.slot-building-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25));
+}
+
+.slot-dimensions {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
+.slot-badge {
+  position: absolute;
+  bottom: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Layer 3.5: Sample Screen View
+   ========================================================================== */
+
+.building-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000; /* Sits above the map and HUD, below the clouds */
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #f8fafc;
+  padding: 2rem;
+}
+
+.building-screen.hidden {
+  display: none !important;
+}
+
+.screen-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.screen-title {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.screen-subtitle {
+  font-size: 1.2rem;
+  color: #94a3b8;
+}
+
+/* Mobile Portrait Override: Rotate the screen along with the rest of the app */
+@media screen and (orientation: portrait) and (max-width: 900px) {
+  .building-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vh !important;
+    height: 100vw !important;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center center;
+  }
+}
+
+/* ==========================================================================
+   Layer 4: Sliding Cloud Transition Curtain (Full-Coverage Responsive)
+   ========================================================================== */
+
+.cloud-curtain {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  pointer-events: none;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease;
+}
+
+.cloud-curtain.clouds-closed,
+.cloud-curtain.is-animating {
+  visibility: visible;
+  opacity: 1;
+}
+
+.cloud-bank {
+  position: absolute;
+  top: -25%;
+  /* Using 75vmax guarantees the clouds are wide enough on ANY screen aspect ratio */
+  width: 75vmax;
+  height: 150%;
+  background: #f8fafc;
+  filter: drop-shadow(0 0 50px rgba(0, 0, 0, 0.25));
+  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: transform;
+}
+
+/* Rest State: Pushed completely off-screen */
+.cloud-bank-left {
+  left: 0;
+  transform: translate3d(-150%, 0, 0);
+  border-radius: 0 45% 45% 0;
+}
+
+.cloud-bank-right {
+  right: 0;
+  transform: translate3d(150%, 0, 0);
+  border-radius: 45% 0 0 45%;
+}
+
+/* Closed State: Overlap fully in the center */
+.cloud-curtain.clouds-closed .cloud-bank-left {
+  transform: translate3d(-15%, 0, 0);
+}
+
+.cloud-curtain.clouds-closed .cloud-bank-right {
+  transform: translate3d(15%, 0, 0);
+}
+
+/* Decorative puffy clouds sized relative to vmax for consistent scale */
+.cloud-puff {
+  position: absolute;
+  background: #f8fafc;
+  border-radius: 50%;
+}
+
+.puff-1 {
+  width: 35vmax;
+  height: 35vmax;
+  right: -12vmax;
+  top: 10%;
+}
+.puff-2 {
+  width: 40vmax;
+  height: 40vmax;
+  right: -15vmax;
+  top: 38%;
+}
+.puff-3 {
+  width: 32vmax;
+  height: 32vmax;
+  right: -10vmax;
+  top: 68%;
+}
+
+.puff-4 {
+  width: 35vmax;
+  height: 35vmax;
+  left: -12vmax;
+  top: 8%;
+}
+.puff-5 {
+  width: 42vmax;
+  height: 42vmax;
+  left: -16vmax;
+  top: 36%;
+}
+.puff-6 {
+  width: 30vmax;
+  height: 30vmax;
+  left: -10vmax;
+  top: 66%;
+}
+
+/* ==========================================================================
+   Hardware Portrait Override: Synchronize Clouds with 90deg Landscape Rotation
+   ========================================================================== */
+
+@media screen and (orientation: portrait) and (max-width: 900px) {
+  body {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Rotate viewport, HUD, AND cloud curtain together so clouds slide across the visual landscape */
+  .viewport,
+  .map-hud,
+  .cloud-curtain {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vh !important;
+    height: 100vw !important;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center center;
+  }
+}
+
+/* ==========================================================================
+   Hardware Portrait Override: Force Landscape via CSS Transform
+   ========================================================================== */
+
+@media screen and (orientation: portrait) and (max-width: 900px) {
+  body {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .viewport,
+  .map-hud {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vh !important;
+    height: 100vw !important;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center center;
+  }
+}
+
+/* ========================================================
+   MAP SLOT LOCK SHAKE ANIMATION
+   ======================================================== */
+.shake-locked {
+  animation: building-shake 0.35s ease-in-out;
+}
+
+@keyframes building-shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ========================================================
+   GLOBAL APP TOAST NOTIFICATION
+   ======================================================== */
+.app-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translate(-50%, -50px);
+  background: rgba(18, 18, 22, 0.96);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 90, 0, 0.5);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.85),
+    0 0 25px rgba(255, 90, 0, 0.25);
+  color: #f4f4f5;
+  border-radius: 12px;
+  font-size: 14px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-toast.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px 16px 22px;
+}
+
+.app-toast b {
+  color: #ff8c42;
+}
+
+.toast-icon {
+  font-size: 16px;
+}
+
+.toast-progress-bar {
+  height: 3px;
+  width: 100%;
+  background: #ff5a00;
+  box-shadow: 0 0 8px #ff5a00;
+  transform-origin: left;
+}
+
+.app-toast.show .toast-progress-bar {
+  animation: toast-timer linear forwards;
+}
+
+@keyframes toast-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* ========================================================
+   MAP SLOT INTERACTIVE HOVER TOOLTIP & STATUS
+   ======================================================== */
+.map-slot.slot-locked .slot-building-img {
+  filter: grayscale(40%) brightness(0.85) drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
+  opacity: 0.85;
+  transition: all 0.3s ease;
+}
+
+.map-slot.slot-locked:hover .slot-building-img {
+  filter: grayscale(15%) brightness(0.95) drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
+  opacity: 1;
+}
+
+.map-slot.slot-completed .slot-building-img {
+  filter: drop-shadow(0 0 14px rgba(34, 197, 94, 0.35)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.3));
+}
+
+.slot-hover-tooltip {
+  position: absolute;
+  top: var(--tooltip-top, 0px);
+  left: var(--tooltip-left, 50%);
+  transform: translate(-50%, calc(-100% - 10px)) translateY(4px);
+  background: rgba(15, 17, 23, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 90, 0, 0.45);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.7),
+    0 0 16px rgba(255, 90, 0, 0.2);
+  color: #f4f4f5;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.2s ease;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+/* Downward indicator arrow */
+.slot-hover-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0 5px;
+  border-style: solid;
+  border-color: rgba(15, 17, 23, 0.94) transparent transparent transparent;
+}
+
+/* Show smoothly on building hover */
+.map-slot:hover .slot-hover-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, calc(-100% - 10px)) translateY(0);
+}
+
+.slot-hover-tooltip .tooltip-name {
+  color: #ffffff;
+}
+
+.slot-hover-tooltip .tooltip-sep {
+  color: #52525b;
+  font-size: 11px;
+}
+
+.slot-hover-tooltip.status-locked {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.7),
+    0 0 16px rgba(239, 68, 68, 0.2);
+}
+
+.slot-hover-tooltip.status-locked .tooltip-status {
+  color: #f87171;
+}
+
+.slot-hover-tooltip.status-progress .tooltip-status {
+  color: #ff8c42;
+}
+
+.slot-hover-tooltip.status-completed {
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.7),
+    0 0 16px rgba(34, 197, 94, 0.2);
+}
+
+.slot-hover-tooltip.status-completed .tooltip-status {
+  color: #4ade80;
+}
+
+.slot-hover-tooltip.status-revision {
+  border-color: rgba(234, 179, 8, 0.5);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.7),
+    0 0 16px rgba(234, 179, 8, 0.2);
+}
+
+.slot-hover-tooltip.status-revision .tooltip-status {
+  color: #facc15;
+}
+
+/* Suppress hover tooltips during active camera panning */
+body.is-panning .slot-hover-tooltip {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+
+/* ==========================================================================
+   ORGANIC COASTLINE, WATER FOAM & WAVE RIPPLES
+   ========================================================================== */
+
+.island-coastline-svg {
+  /* Removed hard boxy drop-shadow filter; smooth depth is handled directly in SVG gradients */
+}
+
+.wave-shore-shelf {
+  animation: shoreWaterBreathe 8s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+@keyframes shoreWaterBreathe {
+  0% {
+    transform: scale(0.994);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.008);
+    opacity: 0.95;
+  }
+}
+
+/* Organic Grass: Soft flowing boundaries without disturbing internal building grids */
+.organic-grass {
+  border-radius: 36px 48px 42px 34px / 44px 38px 48px 40px !important;
+  box-shadow: inset 0 0 25px rgba(34, 197, 94, 0.25), 0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+/* ==========================================================================
+   INTERACTIVE LIVING BUILDINGS (HOVER SPRING & TARGET BEACON)
+   ========================================================================== */
+
+.map-slot {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+}
+
+/* Unlocked buildings have a gentle tactile spring-lift on hover */
+.map-slot.slot-unlocked:hover,
+.map-slot.slot-completed:hover,
+.map-slot.slot-revision:hover {
+  transform: translateY(-7px) scale(1.025);
+  z-index: 50;
+}
+
+.map-slot.slot-unlocked:hover .slot-building-img,
+.map-slot.slot-completed:hover .slot-building-img {
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
+}
+
+/* Active Target Building: Soft pulsating beacon indicating next mission */
+.map-slot.slot-active-target .slot-building-img {
+  animation: activeTargetBreathe 3.5s ease-in-out infinite;
+}
+
+@keyframes activeTargetBreathe {
+  0%, 100% {
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25)) drop-shadow(0 0 0 rgba(255, 90, 0, 0));
+  }
+  50% {
+    filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.35)) drop-shadow(0 0 16px rgba(255, 90, 0, 0.55));
+  }
+}
+
+/* ==========================================================================
+   LAYER 3.8: AMBIENT SKY (WHITE CLOUDS, SHADOWS & BIRDS ACROSS THE FULL MAP)
+   ========================================================================== */
+
+.ambient-sky-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--world-width);
+  height: var(--world-height);
+  pointer-events: none;
+  z-index: 35;
+  overflow: visible;
+}
+
+/* 1. High-Altitude Drifting Cloud Shadows */
+.cloud-shadow {
+  position: absolute;
+  background: radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 0.16) 0%, rgba(15, 23, 42, 0.08) 45%, transparent 75%);
+  border-radius: 50%;
+  filter: blur(28px);
+  will-change: transform;
+}
+
+.cloud-shadow.shadow-1 {
+  width: 620px;
+  height: 380px;
+  top: -60px;
+  left: -200px;
+  animation: driftShadowOne 52s linear infinite;
+}
+
+.cloud-shadow.shadow-2 {
+  width: 540px;
+  height: 330px;
+  top: 30%;
+  left: -350px;
+  animation: driftShadowTwo 65s linear infinite 16s;
+}
+
+.cloud-shadow.shadow-3 {
+  width: 720px;
+  height: 440px;
+  top: 60%;
+  left: -400px;
+  animation: driftShadowOne 58s linear infinite 28s;
+}
+
+@keyframes driftShadowOne {
+  0% {
+    transform: translate(-300px, 150px) scale(0.9);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 400px), -320px) scale(1.15);
+    opacity: 0;
+  }
+}
+
+@keyframes driftShadowTwo {
+  0% {
+    transform: translate(-300px, 100px) scale(1);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  88% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 400px), -260px) scale(1.05);
+    opacity: 0;
+  }
+}
+
+/* 2. Floating White Semi-Transparent Clouds in the Sky */
+.fluffy-cloud {
+  position: absolute;
+  filter: drop-shadow(0 20px 25px rgba(15, 23, 42, 0.12));
+  opacity: 0.75;
+  will-change: transform;
+}
+
+.fluffy-cloud .cloud-part {
+  position: absolute;
+  background: linear-gradient(180deg, #ffffff 0%, #edf2f7 100%);
+  border-radius: 50%;
+}
+
+/* Cloud A: Travels WSW -> ENE across the sky */
+.fluffy-cloud.cloud-a {
+  width: 360px;
+  height: 145px;
+  top: 10%;
+  left: 0;
+  animation: floatCloudWSWtoENE 48s linear infinite;
+}
+
+.fluffy-cloud.cloud-a .p1 { width: 145px; height: 92px; top: 25px; left: 10px; }
+.fluffy-cloud.cloud-a .p2 { width: 175px; height: 112px; top: 5px; left: 85px; }
+.fluffy-cloud.cloud-a .p3 { width: 135px; height: 88px; top: 28px; left: 190px; }
+.fluffy-cloud.cloud-a .p4 { width: 280px; height: 62px; top: 62px; left: 40px; border-radius: 31px; }
+
+/* Cloud B: Travels WNW -> ESE across the lower sea */
+.fluffy-cloud.cloud-b {
+  width: 440px;
+  height: 165px;
+  top: 55%;
+  left: 0;
+  animation: floatCloudWNWtoESE 58s linear infinite 14s;
+  opacity: 0.65;
+  transform: scale(0.92);
+}
+
+.fluffy-cloud.cloud-b .p1 { width: 165px; height: 105px; top: 30px; left: 20px; }
+.fluffy-cloud.cloud-b .p2 { width: 220px; height: 135px; top: 8px; left: 110px; }
+.fluffy-cloud.cloud-b .p3 { width: 155px; height: 98px; top: 32px; left: 245px; }
+.fluffy-cloud.cloud-b .p4 { width: 340px; height: 72px; top: 78px; left: 50px; border-radius: 36px; }
+
+/* Cloud C: Straight Westerly Flow W -> E */
+.fluffy-cloud.cloud-c {
+  width: 300px;
+  height: 125px;
+  top: 32%;
+  left: 0;
+  animation: floatCloudWestToEast 44s linear infinite 22s;
+  opacity: 0.7;
+}
+
+.fluffy-cloud.cloud-c .p1 { width: 125px; height: 78px; top: 20px; left: 10px; }
+.fluffy-cloud.cloud-c .p2 { width: 155px; height: 98px; top: 5px; left: 75px; }
+.fluffy-cloud.cloud-c .p3 { width: 120px; height: 78px; top: 22px; left: 160px; }
+.fluffy-cloud.cloud-c .p4 { width: 230px; height: 52px; top: 54px; left: 35px; border-radius: 26px; }
+
+/* Cloud D: Diagonal drifter NW -> SE across high atmosphere */
+.fluffy-cloud.cloud-d {
+  width: 380px;
+  height: 150px;
+  top: -80px;
+  left: 0;
+  animation: floatCloudNWtoSE 64s linear infinite 8s;
+  opacity: 0.6;
+}
+
+.fluffy-cloud.cloud-d .p1 { width: 150px; height: 95px; top: 25px; left: 15px; }
+.fluffy-cloud.cloud-d .p2 { width: 190px; height: 120px; top: 6px; left: 95px; }
+.fluffy-cloud.cloud-d .p3 { width: 140px; height: 90px; top: 28px; left: 210px; }
+.fluffy-cloud.cloud-d .p4 { width: 300px; height: 65px; top: 68px; left: 40px; border-radius: 32px; }
+
+@keyframes floatCloudWSWtoENE {
+  0% {
+    transform: translate(-800px, 350px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.75;
+  }
+  90% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 900px), -280px);
+    opacity: 0;
+  }
+}
+
+@keyframes floatCloudWNWtoESE {
+  0% {
+    transform: translate(-900px, -200px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.65;
+  }
+  90% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 900px), 380px);
+    opacity: 0;
+  }
+}
+
+@keyframes floatCloudWestToEast {
+  0% {
+    transform: translate(-800px, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 900px), 40px);
+    opacity: 0;
+  }
+}
+
+@keyframes floatCloudNWtoSE {
+  0% {
+    transform: translate(-600px, -300px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 800px), 800px);
+    opacity: 0;
+  }
+}
+
+/* 3. Realistic Coastal Birds with Multiple Trajectories & Variable Flock Sizes */
+.bird-flight-group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.seabird {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 10px 6px rgba(10, 20, 30, 0.18));
+}
+
+.seabird .wing {
+  width: 8.5px;
+  height: 3px;
+  border-top: 2px solid #ffffff;
+  border-radius: 50% 50% 0 0;
+}
+
+.seabird .wing.left {
+  transform-origin: right bottom;
+  transform: rotate(-18deg);
+  animation: flapLeft 0.6s ease-in-out infinite alternate;
+}
+
+.seabird .wing.right {
+  transform-origin: left bottom;
+  transform: rotate(18deg);
+  animation: flapRight 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes flapLeft {
+  0% { transform: rotate(-24deg); }
+  100% { transform: rotate(26deg); }
+}
+
+@keyframes flapRight {
+  0% { transform: rotate(24deg); }
+  100% { transform: rotate(-26deg); }
+}
+
+/* Trajectory 1: 3 Birds flying Southwest -> Northeast across island & ocean */
+.flight-path-ne {
+  animation: pathSouthwestToNortheast 38s linear infinite;
+}
+
+.flight-path-ne .bird-1 { top: 40%; left: 0px; }
+.flight-path-ne .bird-2 { top: 44%; left: -40px; transform: scale(0.85); }
+.flight-path-ne .bird-3 { top: 36%; left: -70px; transform: scale(0.9); }
+
+@keyframes pathSouthwestToNortheast {
+  0% {
+    transform: translate(-800px, 600px);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.95;
+  }
+  92% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 800px), -500px);
+    opacity: 0;
+  }
+}
+
+/* Trajectory 2: 2 Birds flying Northwest -> Southeast across ocean */
+.flight-path-se {
+  animation: pathNorthwestToSoutheast 46s linear infinite 18s;
+}
+
+.flight-path-se .bird-1 { top: 22%; left: 0px; }
+.flight-path-se .bird-2 { top: 27%; left: -45px; transform: scale(0.8); }
+
+@keyframes pathNorthwestToSoutheast {
+  0% {
+    transform: translate(-800px, -400px);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  92% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(var(--world-width) + 800px), 550px);
+    opacity: 0;
+  }
+}
+
+/* Trajectory 3: Solo hawk soaring East -> West against prevailing winds */
+.flight-path-west {
+  animation: pathEastToWest 42s linear infinite 10s;
+}
+
+.flight-path-west .bird-solo {
+  top: 70%;
+  left: 0px;
+  transform: scale(1.15) scaleX(-1); /* Facing west */
+}
+
+@keyframes pathEastToWest {
+  0% {
+    transform: translate(calc(var(--world-width) + 800px), -120px);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.95;
+  }
+  92% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(-800px, 120px);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,339 @@
+/* ==========================================================================
+   Base Reset & Environment
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ==========================================================================
+   Layer 0: Infinite Ocean Floor
+   ========================================================================== */
+
+body {
+  background-color: var(--ocean-color, #2f83c2);
+  background-image:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 255, 255, 0.12) 2px,
+      transparent 0
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(255, 255, 255, 0.08) 3px,
+      transparent 0
+    );
+  background-size:
+    80px 80px,
+    120px 120px;
+}
+
+/* ==========================================================================
+   HUD & UI Elements
+   ========================================================================== */
+
+.map-hud {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+
+.hud-brand {
+  pointer-events: auto;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.brand-title {
+  color: #f8fafc;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-subtitle {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.hud-actions {
+  pointer-events: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hud-btn {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.6rem 1rem;
+  min-width: 2.5rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hud-btn:hover {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.hud-btn:active {
+  transform: translateY(1px);
+}
+
+.hud-btn-primary {
+  background: #2563eb;
+  border-color: #3b82f6;
+}
+
+.hud-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+/* ==========================================================================
+   Viewport & World Canvas
+   ========================================================================== */
+
+.viewport {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+/* Size is dynamically driven by computed bounding box */
+.world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--world-width);
+  height: var(--world-height);
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* ==========================================================================
+   Layer 1: Island Terrains
+   ========================================================================== */
+
+.island-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.island-entity {
+  position: absolute;
+}
+
+.sand-coast {
+  position: absolute;
+  inset: 0;
+  background-color: var(--sand-color, #f7d794);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+}
+
+.grass-lawn {
+  position: absolute;
+  background-color: var(--grass-color, #55b85a);
+}
+
+.island-badge {
+  position: absolute;
+  top: 0px;
+  left: 40px;
+  backdrop-filter: blur(4px);
+  color: #000000;
+  padding: 4px 5px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ==========================================================================
+   Layer 1.5: Island Debug Grid Overlays
+   ========================================================================== */
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.grid-overlay.hidden {
+  opacity: 0;
+}
+
+.island-grid-container {
+  position: absolute;
+  display: grid;
+}
+
+.grid-cell-guide {
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: monospace;
+}
+
+/* ==========================================================================
+   Layer 2: Road & Water Bridge Vector Canvas
+   ========================================================================== */
+
+.road-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--world-width);
+  height: var(--world-height);
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Layer 3: Building Slots & Parcels
+   ========================================================================== */
+
+.building-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.map-slot {
+  position: absolute;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.65);
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+  cursor: pointer;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.map-slot:hover {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.map-slot.has-image {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.slot-building-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25));
+}
+
+.slot-dimensions {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
+.slot-badge {
+  position: absolute;
+  bottom: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Hardware Portrait Override: Force Landscape via CSS Transform
+   ========================================================================== */
+
+@media screen and (orientation: portrait) and (max-width: 900px) {
+  body {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .viewport,
+  .map-hud {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vh !important;
+    height: 100vw !important;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center center;
+  }
+}
