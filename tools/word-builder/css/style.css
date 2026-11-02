@@ -10,6 +10,20 @@
   padding: 0;
   -webkit-tap-highlight-color: transparent !important;
   -webkit-touch-callout: none !important;
+  -webkit-user-select: none;
+  user-select: none;
+  outline: none;
+}
+
+/* Eliminate blue text/box selection on mobile tap & drag */
+::selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+::-moz-selection {
+  background: transparent !important;
+  color: inherit !important;
 }
 
 html,
@@ -183,6 +197,9 @@ body {
 
 .island-entity {
   position: absolute;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  user-select: none;
 }
 
 .sand-coast {
@@ -397,8 +414,7 @@ body {
 }
 
 /* Mobile Portrait Override: Rotate the screen along with the rest of the app */
-/* Native portrait layout enabled (forced 90deg CSS rotation removed) */
-}
+/* Native portrait layout enabled */
 
 /* ==========================================================================
    Layer 4: Sliding Cloud Transition Curtain (Full-Coverage Responsive)
@@ -508,15 +524,13 @@ body {
    Hardware Portrait Override: Synchronize Clouds with 90deg Landscape Rotation
    ========================================================================== */
 
-/* Native portrait layout enabled (forced 90deg CSS rotation removed) */
-}
+/* Native portrait layout enabled */
 
 /* ==========================================================================
    Hardware Portrait Override: Force Landscape via CSS Transform
    ========================================================================== */
 
-/* Native portrait layout enabled (forced 90deg CSS rotation removed) */
-}
+/* Native portrait layout enabled */
 
 /* ========================================================
    MAP SLOT LOCK SHAKE ANIMATION
