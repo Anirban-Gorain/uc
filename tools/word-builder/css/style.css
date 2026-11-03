@@ -107,7 +107,6 @@ body {
     radial-gradient(ellipse 1200px 800px at 20% 30%, rgba(56, 161, 219, 0.45) 0%, transparent 70%),
     radial-gradient(ellipse 1400px 900px at 80% 70%, rgba(30, 114, 175, 0.5) 0%, transparent 70%),
     linear-gradient(135deg, #1b5b8d 0%, #2578b5 45%, #2a87ca 75%, #1e649a 100%);
-  background-attachment: fixed;
 }
 
 /* ==========================================================================
@@ -225,7 +224,6 @@ body {
   width: var(--world-width);
   height: var(--world-height);
   transform-origin: 0 0;
-  will-change: transform;
   touch-action: none;
   -webkit-user-select: none !important;
   -moz-user-select: none !important;
@@ -561,9 +559,8 @@ body {
   width: 75vmax;
   height: 150%;
   background: #f8fafc;
-  filter: drop-shadow(0 0 50px rgba(0, 0, 0, 0.25));
-  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-  will-change: transform;
+  transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+  pointer-events: none;
 }
 
 /* Rest State: Pushed completely off-screen */
@@ -873,19 +870,7 @@ body.is-panning .slot-hover-tooltip {
 }
 
 .wave-shore-shelf {
-  animation: shoreWaterBreathe 8s ease-in-out infinite alternate;
-  transform-origin: center center;
-}
-
-@keyframes shoreWaterBreathe {
-  0% {
-    transform: scale(0.994);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1.008);
-    opacity: 0.95;
-  }
+  opacity: 0.55;
 }
 
 /* Organic Grass: Soft flowing boundaries without disturbing internal building grids */
@@ -943,16 +928,15 @@ body.is-panning .slot-hover-tooltip {
   height: var(--world-height);
   pointer-events: none;
   z-index: 35;
-  overflow: visible;
+  overflow: hidden;
 }
 
 /* 1. High-Altitude Drifting Cloud Shadows */
 .cloud-shadow {
   position: absolute;
-  background: radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 0.16) 0%, rgba(15, 23, 42, 0.08) 45%, transparent 75%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 0.14) 0%, rgba(15, 23, 42, 0.06) 50%, transparent 75%);
   border-radius: 50%;
-  filter: blur(28px);
-  will-change: transform;
+  pointer-events: none;
 }
 
 .cloud-shadow.shadow-1 {
@@ -991,7 +975,7 @@ body.is-panning .slot-hover-tooltip {
     opacity: 1;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 400px), -320px) scale(1.15);
+    transform: translate(calc(var(--world-width) + 150px), -320px) scale(1.15);
     opacity: 0;
   }
 }
@@ -1008,7 +992,7 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.9;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 400px), -260px) scale(1.05);
+    transform: translate(calc(var(--world-width) + 150px), -260px) scale(1.05);
     opacity: 0;
   }
 }
@@ -1016,9 +1000,8 @@ body.is-panning .slot-hover-tooltip {
 /* 2. Floating White Semi-Transparent Clouds in the Sky */
 .fluffy-cloud {
   position: absolute;
-  filter: drop-shadow(0 20px 25px rgba(15, 23, 42, 0.12));
   opacity: 0.75;
-  will-change: transform;
+  pointer-events: none;
 }
 
 .fluffy-cloud .cloud-part {
@@ -1089,7 +1072,7 @@ body.is-panning .slot-hover-tooltip {
 
 @keyframes floatCloudWSWtoENE {
   0% {
-    transform: translate(-800px, 350px);
+    transform: translate(-350px, 350px);
     opacity: 0;
   }
   10% {
@@ -1099,14 +1082,14 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.75;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 900px), -280px);
+    transform: translate(calc(var(--world-width) + 150px), -280px);
     opacity: 0;
   }
 }
 
 @keyframes floatCloudWNWtoESE {
   0% {
-    transform: translate(-900px, -200px);
+    transform: translate(-350px, -200px);
     opacity: 0;
   }
   10% {
@@ -1116,14 +1099,14 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.65;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 900px), 380px);
+    transform: translate(calc(var(--world-width) + 150px), 380px);
     opacity: 0;
   }
 }
 
 @keyframes floatCloudWestToEast {
   0% {
-    transform: translate(-800px, 0);
+    transform: translate(-350px, 0);
     opacity: 0;
   }
   10% {
@@ -1133,14 +1116,14 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.7;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 900px), 40px);
+    transform: translate(calc(var(--world-width) + 150px), 40px);
     opacity: 0;
   }
 }
 
 @keyframes floatCloudNWtoSE {
   0% {
-    transform: translate(-600px, -300px);
+    transform: translate(-350px, -300px);
     opacity: 0;
   }
   10% {
@@ -1150,7 +1133,7 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.6;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 800px), 800px);
+    transform: translate(calc(var(--world-width) + 150px), 800px);
     opacity: 0;
   }
 }
@@ -1212,7 +1195,7 @@ body.is-panning .slot-hover-tooltip {
 
 @keyframes pathSouthwestToNortheast {
   0% {
-    transform: translate(-800px, 600px);
+    transform: translate(-350px, 600px);
     opacity: 0;
   }
   8% {
@@ -1222,7 +1205,7 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.95;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 800px), -500px);
+    transform: translate(calc(var(--world-width) + 150px), -500px);
     opacity: 0;
   }
 }
@@ -1237,7 +1220,7 @@ body.is-panning .slot-hover-tooltip {
 
 @keyframes pathNorthwestToSoutheast {
   0% {
-    transform: translate(-800px, -400px);
+    transform: translate(-350px, -400px);
     opacity: 0;
   }
   8% {
@@ -1247,7 +1230,7 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.9;
   }
   100% {
-    transform: translate(calc(var(--world-width) + 800px), 550px);
+    transform: translate(calc(var(--world-width) + 150px), 550px);
     opacity: 0;
   }
 }
@@ -1265,7 +1248,7 @@ body.is-panning .slot-hover-tooltip {
 
 @keyframes pathEastToWest {
   0% {
-    transform: translate(calc(var(--world-width) + 800px), -120px);
+    transform: translate(calc(var(--world-width) + 150px), -120px);
     opacity: 0;
   }
   8% {
@@ -1275,7 +1258,7 @@ body.is-panning .slot-hover-tooltip {
     opacity: 0.95;
   }
   100% {
-    transform: translate(-800px, 120px);
+    transform: translate(-350px, 120px);
     opacity: 0;
   }
 }

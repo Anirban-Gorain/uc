@@ -2,7 +2,7 @@ import { dom, camera } from "../state.js";
 import { dataStore } from "../dataStore.js";
 import { openWordScreen } from "../components/wordScreen.js";
 import { checkRevisions, isBuildingUnlocked } from "./progress.js";
-import { transitionWithClouds } from "./clouds.js";
+import { transitionWithClouds, isCloudTransitioning } from "./clouds.js";
 import { sound } from "./audio.js";
 import { showToast } from "../components/toast.js";
 
@@ -85,6 +85,11 @@ export function initEvents() {
   // Delegated click listener on the building parcels layer
   dom.buildingLayer.addEventListener("click", (e) => {
     clearSelection();
+
+    // Prevent multi-click race conditions if a transition is running or modal is open
+    if (isCloudTransitioning() || document.querySelector(".screen-overlay")) {
+      return;
+    }
 
     // Discriminate between panning/dragging the map vs clicking a building
     if (camera && camera.totalDragDist > 6) return;

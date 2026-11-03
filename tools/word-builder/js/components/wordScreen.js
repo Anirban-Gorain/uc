@@ -377,6 +377,8 @@ class WordScreenModal {
     if (this.overlay && this.overlay.parentNode) {
       this.overlay.remove();
     }
+    // Clean up any stray overlays
+    document.querySelectorAll(".screen-overlay").forEach((el) => el.remove());
     this.overlay = null;
     this.dom = {};
   }
@@ -387,6 +389,8 @@ class WordScreenModal {
  * @param {Object} buildingData
  */
 export function openWordScreen(buildingData) {
+  // Ensure no existing modal remains mounted
+  document.querySelectorAll(".screen-overlay").forEach((el) => el.remove());
   const modal = new WordScreenModal(buildingData);
   modal.mount();
   return modal;
