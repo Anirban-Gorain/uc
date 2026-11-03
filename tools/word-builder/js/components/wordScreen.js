@@ -12,6 +12,10 @@ import {
 } from "../engine/progress.js";
 import { transitionWithClouds } from "../engine/clouds.js";
 import { sound } from "../engine/audio.js";
+import {
+  generatePromptForFloor,
+  getFloorUnlockPassword,
+} from "../engine/promptGenerator.js";
 
 class WordScreenModal {
   constructor(buildingData) {
@@ -364,8 +368,7 @@ class WordScreenModal {
     this.dom.loadPromptBtn.classList.add("loading-pulse");
 
     const currentFloor = this.floors[this.activeFloorIndex] || {};
-    const vocabulary = (currentFloor.wordList || currentFloor.words || []).join(", ");
-    const promptPayload = `You are an English coach. Mission: ${currentFloor.mission}. Focus vocabulary: [${vocabulary}]. Test my spoken responses.`;
+    const promptPayload = generatePromptForFloor(this.building, currentFloor);
 
     try {
       if (navigator.clipboard?.writeText) {
@@ -398,7 +401,7 @@ class WordScreenModal {
   _handleVerifyCode() {
     const currentFloor = this.floors[this.activeFloorIndex] || {};
     const enteredVal = this.dom.codeInput.value.trim();
-    const expectedCode = String(currentFloor.secretCode || "1234").trim();
+    const expectedCode = getFloorUnlockPassword(this.building, currentFloor);
 
     if (enteredVal === expectedCode) {
       sound?.playSuccess?.();
