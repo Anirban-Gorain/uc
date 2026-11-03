@@ -2,7 +2,7 @@
  * @file camera.js
  * @description Manages viewport transform, pan/drag, pointer-anchored wheel zoom,
  * trackpad normalization, two-finger mobile pinch zooming with anchor tracking,
- * and debounced camera position persistence.
+ * hardware-accelerated 60/120fps rAF rendering, and debounced camera persistence.
  */
 
 import { MAP_CONFIG } from "../config.js";
@@ -16,11 +16,9 @@ import {
   loadSavedCameraState,
 } from "../state.js";
 
-const DRAG_THRESHOLD = 6; // Movement beyond 6px is a drag, not a click
-
 // Debounced camera state persistence to avoid blocking the main thread during gestures
 let saveTimeout = null;
-function debouncedSaveCameraState(delay = 200) {
+export function debouncedSaveCameraState(delay = 300) {
   if (saveTimeout) clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
     saveCameraState();
@@ -28,8 +26,25 @@ function debouncedSaveCameraState(delay = 200) {
   }, delay);
 }
 
+// Hardware-accelerated 60/120fps rAF render batching
+let rAFScheduled = false;
+
 export function renderCameraTransform() {
-  dom.world.style.transform = `translate(${camera.x}px, ${camera.y}px) scale(${camera.zoom})`;
+  if (rAFScheduled) return;
+  rAFScheduled = true;
+  requestAnimationFrame(() => {
+    if (dom.world) {
+      dom.world.style.transform = `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`;
+    }
+    rAFScheduled = false;
+  });
+}
+
+export function renderCameraTransformImmediate() {
+  rAFScheduled = false;
+  if (dom.world) {
+    dom.world.style.transform = `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.zoom})`;
+  }
 }
 
 export function fitMapToViewport() {
@@ -50,8 +65,8 @@ export function fitMapToViewport() {
   camera.x = (vpWidth - runtimeWorld.width * camera.zoom) / 2;
   camera.y = (vpHeight - runtimeWorld.height * camera.zoom) / 2;
 
-  renderCameraTransform();
-  debouncedSaveCameraState(0);
+  renderCameraTransformImmediate();
+  saveCameraState();
 }
 
 /**
@@ -66,7 +81,7 @@ export function initializeCamera() {
       MAP_CONFIG.camera.minZoom,
       Math.min(MAP_CONFIG.camera.maxZoom, saved.zoom),
     );
-    renderCameraTransform();
+    renderCameraTransformImmediate();
   } else {
     fitMapToViewport();
   }
@@ -95,7 +110,7 @@ function handleResizePreserveZoom() {
       lastVpWidth = vpWidth;
       lastVpHeight = vpHeight;
       renderCameraTransform();
-      debouncedSaveCameraState(150);
+      debouncedSaveCameraState(300);
       return;
     }
   }
@@ -109,7 +124,7 @@ function handleResizePreserveZoom() {
   camera.y = (vpHeight - runtimeWorld.height * camera.zoom) / 2;
 
   renderCameraTransform();
-  debouncedSaveCameraState(150);
+  debouncedSaveCameraState(300);
 }
 
 /**
@@ -139,55 +154,56 @@ export function zoomCameraByFactor(factor, anchorX = null, anchorY = null) {
   camera.zoom = targetZoom;
 
   renderCameraTransform();
-  debouncedSaveCameraState(150);
 }
 
 /**
  * Backward-compatible zoom helper that converts delta or steps into proportional zoom
  */
 export function zoomCamera(delta, anchorX = null, anchorY = null) {
-  // Translate linear delta into smooth multiplicative factor
-  // delta > 0 zooms in (~1.2x for a standard +0.1 step), delta < 0 zooms out (~1/1.2x)
   const factor = delta > 0 ? 1 + Math.abs(delta) * 2 : 1 / (1 + Math.abs(delta) * 2);
   zoomCameraByFactor(factor, anchorX, anchorY);
 }
 
 /**
  * Robust Wheel & Trackpad Handler:
- * Supports high-resolution mouse wheels, standard notched wheels, and trackpad pinch/pan gestures.
+ * High-sensitivity trackpad pinch-to-zoom, smooth trackpad 2-finger panning,
+ * and responsive physical mouse wheel zooming.
  */
 function handleWheel(event) {
   event.preventDefault();
 
   const coords = getNormalizedPointer(event);
 
-  // 1. PINCH-TO-ZOOM (Trackpad pinch or Ctrl + mouse wheel)
+  // 1. TRACKPAD PINCH-TO-ZOOM (or Ctrl + mouse wheel)
   if (event.ctrlKey) {
-    const zoomFactor = 0.01;
-    const clampedDelta = Math.max(-60, Math.min(60, event.deltaY));
-    const factor = Math.exp(-clampedDelta * zoomFactor);
+    // Normalizing delta between high-precision trackpads and notched wheels with Ctrl held
+    const rawDelta = event.deltaMode !== 0 ? event.deltaY * 20 : event.deltaY;
+    const clampedDelta = Math.max(-30, Math.min(30, rawDelta));
+    // Highly responsive 0.018 sensitivity multiplier matching natural finger distance
+    const factor = Math.exp(-clampedDelta * 0.018);
     zoomCameraByFactor(factor, coords.x, coords.y);
+    debouncedSaveCameraState(300);
     return;
   }
 
-  // 2. DISCRIMINATE MOUSE WHEEL VS TRACKPAD TWO-FINGER SWIPE
-  // Trackpad panning produces continuous horizontal motion (deltaX !== 0) or small fractional non-wheel deltas.
-  // Standard and high-precision mouse wheels almost exclusively scroll on deltaY with deltaX === 0.
-  const isPureVertical = Math.abs(event.deltaX) === 0;
-  const hasSubstantialY = Math.abs(event.deltaY) > 0;
+  // 2. DISCRIMINATE PHYSICAL NOTCHED MOUSE WHEEL VS TRACKPAD PANNING
+  // Physical mouse wheels emit discrete notched jumps (Math.abs(deltaY) >= 40) or deltaMode !== 0.
+  // Laptop trackpads emit continuous small floats/integers across both axes.
+  const isPhysicalMouseWheel =
+    event.deltaMode !== 0 ||
+    (Math.abs(event.deltaY) >= 40 && Math.abs(event.deltaX) === 0);
 
-  // On standard desktop browsers, mouse wheel default behavior in maps is ZOOM.
-  // If user holds Shift, or is swiping both axes on a trackpad, treat as PAN.
-  if (isPureVertical && hasSubstantialY && !event.shiftKey) {
-    // Responsive zoom step based on scroll direction
+  if (isPhysicalMouseWheel && !event.shiftKey) {
+    // Physical mouse wheel: zoom into cursor location
     const factor = event.deltaY < 0 ? 1.25 : 1 / 1.25;
     zoomCameraByFactor(factor, coords.x, coords.y);
+    debouncedSaveCameraState(300);
   } else {
-    // Trackpad two-finger swipe or Shift-scroll pans the map
+    // Laptop trackpad two-finger glide or Shift + wheel: smooth 2D panning
     camera.x -= event.deltaX;
     camera.y -= event.deltaY;
     renderCameraTransform();
-    debouncedSaveCameraState(150);
+    debouncedSaveCameraState(300);
   }
 }
 
@@ -220,15 +236,39 @@ function handlePointerDown(e) {
     document.activeElement.blur();
   }
 
-  if (e.touches && e.touches.length === 2) {
-    camera.isDragging = false;
-    document.body.classList.remove("is-panning");
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
-    camera.touchPinchDist = Math.hypot(dx, dy);
-    return;
+  // Multi-touch gestures (phones, tablets, touch displays)
+  if (e.touches) {
+    if (e.touches.length === 2) {
+      // 2-finger touch start: initialize pinch-zoom and midpoint tracking
+      camera.isDragging = false;
+      camera.totalDragDist = 999; // Ensure lifting fingers does not trigger building clicks
+      document.body.classList.remove("is-panning");
+
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      camera.touchPinchDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      const mid = getPinchMidpoint(t1, t2);
+      camera.touchPinchMidX = mid.x;
+      camera.touchPinchMidY = mid.y;
+      return;
+    }
+
+    if (e.touches.length === 1) {
+      // 1-finger drag start
+      const t = e.touches[0];
+      camera.isDragging = true;
+      camera.totalDragDist = 0;
+      camera.touchPinchDist = 0;
+      camera.touchPinchMidX = null;
+      camera.touchPinchMidY = null;
+      camera.dragStartX = t.clientX - camera.x;
+      camera.dragStartY = t.clientY - camera.y;
+      document.body.classList.add("is-panning");
+      return;
+    }
   }
 
+  // Desktop Mouse drag start
   const coords = getNormalizedPointer(e);
   camera.isDragging = true;
   camera.totalDragDist = 0;
@@ -244,27 +284,46 @@ function handlePointerMove(e) {
     e.preventDefault();
   }
 
-  // Mobile touchscreen two-finger pinch-to-zoom
+  // Mobile touchscreen two-finger pinch-to-zoom + pan tracking
   if (e.touches && e.touches.length === 2) {
     const t1 = e.touches[0];
     const t2 = e.touches[1];
-    const dx = t1.clientX - t2.clientX;
-    const dy = t1.clientY - t2.clientY;
-    const currentDist = Math.hypot(dx, dy);
+    const currentDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+    const currentMid = getPinchMidpoint(t1, t2);
 
-    if (camera.touchPinchDist > 0 && currentDist > 0) {
-      // Calculate true pinch ratio
-      const factor = currentDist / camera.touchPinchDist;
-      
-      // Calculate geometric midpoint between the two fingers in current orientation
-      const midpoint = getPinchMidpoint(t1, t2);
+    if (
+      camera.touchPinchDist > 0 &&
+      currentDist > 0 &&
+      camera.touchPinchMidX !== null &&
+      camera.touchPinchMidY !== null
+    ) {
+      const scaleRatio = currentDist / camera.touchPinchDist;
+      const targetZoom = Math.max(
+        MAP_CONFIG.camera.minZoom,
+        Math.min(MAP_CONFIG.camera.maxZoom, camera.zoom * scaleRatio)
+      );
+      const actualRatio = targetZoom / camera.zoom;
 
-      zoomCameraByFactor(factor, midpoint.x, midpoint.y);
+      // Calculate shift of the finger midpoint across screen
+      const deltaMidX = currentMid.x - camera.touchPinchMidX;
+      const deltaMidY = currentMid.y - camera.touchPinchMidY;
+
+      // Simultaneous geometric zoom around midpoint + natural hand pan translation
+      camera.x = currentMid.x - (currentMid.x - camera.x) * actualRatio + deltaMidX;
+      camera.y = currentMid.y - (currentMid.y - camera.y) * actualRatio + deltaMidY;
+      camera.zoom = targetZoom;
+
+      renderCameraTransform();
     }
+
     camera.touchPinchDist = currentDist;
+    camera.touchPinchMidX = currentMid.x;
+    camera.touchPinchMidY = currentMid.y;
+    camera.totalDragDist = 999;
     return;
   }
 
+  // Single pointer / 1-finger drag
   if (!camera.isDragging) return;
 
   const coords = getNormalizedPointer(e);
@@ -278,9 +337,24 @@ function handlePointerMove(e) {
   renderCameraTransform();
 }
 
-function handlePointerUp() {
+function handlePointerUp(e) {
+  // Seamless handover: If 1 finger remains after releasing 1 finger of a pinch, continue panning
+  if (e && e.touches && e.touches.length === 1) {
+    camera.touchPinchDist = 0;
+    camera.touchPinchMidX = null;
+    camera.touchPinchMidY = null;
+    camera.isDragging = true;
+    const remainingTouch = e.touches[0];
+    camera.dragStartX = remainingTouch.clientX - camera.x;
+    camera.dragStartY = remainingTouch.clientY - camera.y;
+    return;
+  }
+
+  // All fingers / mouse released
   camera.isDragging = false;
   camera.touchPinchDist = 0;
+  camera.touchPinchMidX = null;
+  camera.touchPinchMidY = null;
   document.body.classList.remove("is-panning");
   saveCameraState();
 
@@ -303,8 +377,8 @@ export function registerCameraEvents() {
     passive: false,
   });
   window.addEventListener("touchmove", handlePointerMove, { passive: false });
-  window.addEventListener("touchend", handlePointerUp);
-  window.addEventListener("touchcancel", handlePointerUp);
+  window.addEventListener("touchend", handlePointerUp, { passive: false });
+  window.addEventListener("touchcancel", handlePointerUp, { passive: false });
 
   // Wheel & Trackpad Gestures (Two-finger pan, pinch, mouse wheel)
   dom.viewport.addEventListener("wheel", handleWheel, { passive: false });
@@ -316,11 +390,13 @@ export function registerCameraEvents() {
   );
 
   // HUD Controls (responsive, clear zoom step)
-  dom.zoomInBtn.addEventListener("click", () =>
-    zoomCameraByFactor(1.35),
-  );
-  dom.zoomOutBtn.addEventListener("click", () =>
-    zoomCameraByFactor(1 / 1.35),
-  );
+  dom.zoomInBtn.addEventListener("click", () => {
+    zoomCameraByFactor(1.35);
+    debouncedSaveCameraState(300);
+  });
+  dom.zoomOutBtn.addEventListener("click", () => {
+    zoomCameraByFactor(1 / 1.35);
+    debouncedSaveCameraState(300);
+  });
   dom.fitMapBtn.addEventListener("click", fitMapToViewport);
 }

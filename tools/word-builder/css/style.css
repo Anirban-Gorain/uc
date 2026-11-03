@@ -225,6 +225,9 @@ body {
   height: var(--world-height);
   transform-origin: 0 0;
   touch-action: none;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   -webkit-user-select: none !important;
   -moz-user-select: none !important;
   -ms-user-select: none !important;

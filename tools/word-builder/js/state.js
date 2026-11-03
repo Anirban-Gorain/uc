@@ -15,6 +15,8 @@ export const camera = {
   dragStartX: 0,
   dragStartY: 0,
   touchPinchDist: 0,
+  touchPinchMidX: null,
+  touchPinchMidY: null,
   // Click vs Drag discrimination
   totalDragDist: 0,
 };
