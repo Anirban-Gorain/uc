@@ -18,6 +18,22 @@ export function initEvents() {
     console.warn("Revision check skipped:", err);
   }
 
+  // Prevent mobile browser multi-tap selection and contextual callouts on the entire map
+  window.addEventListener("selectstart", (e) => {
+    // Allow text selection only inside editable form fields (like modal code inputs)
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) {
+      return;
+    }
+    e.preventDefault();
+  }, { passive: false });
+
+  window.addEventListener("contextmenu", (e) => {
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) {
+      return;
+    }
+    e.preventDefault();
+  }, { passive: false });
+
   if (!dom.buildingLayer) {
     console.error("dom.buildingLayer not found in DOM");
     return;
@@ -25,6 +41,14 @@ export function initEvents() {
 
   // Delegated click listener on the building parcels layer
   dom.buildingLayer.addEventListener("click", (e) => {
+    // Clear any text selection that mobile OS multi-tap may have created
+    if (window.getSelection) {
+      const sel = window.getSelection();
+      if (sel && sel.removeAllRanges) {
+        sel.removeAllRanges();
+      }
+    }
+
     // Discriminate between panning/dragging the map vs clicking a building
     if (camera && camera.totalDragDist > 6) return;
 
