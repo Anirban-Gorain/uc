@@ -917,7 +917,7 @@ body.is-panning .slot-hover-tooltip {
 }
 
 /* ==========================================================================
-   LAYER 3.8: AMBIENT SKY (WHITE CLOUDS & BIRDS ACROSS THE FULL SCREEN)
+   LAYER 3.8: AMBIENT SKY (SUBTLE, SMALL CLOUDS & DISTANT BIRDS)
    ========================================================================== */
 
 .ambient-sky-layer {
@@ -930,11 +930,13 @@ body.is-panning .slot-hover-tooltip {
   overflow: hidden;
 }
 
-/* 1. Floating White Semi-Transparent Clouds in the High Sky */
+/* 1. Small, Soft, High-Altitude Floating Clouds (Delicate Background Details) */
 .fluffy-cloud {
   position: absolute;
-  opacity: 0.78;
+  left: -200px; /* Always resting off-screen to prevent popping */
+  opacity: 0;
   pointer-events: none;
+  animation-fill-mode: backwards;
 }
 
 .fluffy-cloud .cloud-part {
@@ -943,255 +945,137 @@ body.is-panning .slot-hover-tooltip {
   border-radius: 50%;
 }
 
-/* Cloud A: Travels WSW -> ENE across the upper sky */
+/* Cloud A: Small wispy cloud drifting slowly across upper horizon (~115px wide) */
 .fluffy-cloud.cloud-a {
-  width: 320px;
-  height: 130px;
-  top: 8%;
-  left: 0;
-  animation: floatCloudWSWtoENE 42s linear infinite;
+  width: 115px;
+  height: 46px;
+  top: 10%;
+  animation: floatCloudA 46s linear infinite;
+  opacity: 0.45;
 }
 
-.fluffy-cloud.cloud-a .p1 { width: 130px; height: 82px; top: 22px; left: 10px; }
-.fluffy-cloud.cloud-a .p2 { width: 155px; height: 100px; top: 4px; left: 75px; }
-.fluffy-cloud.cloud-a .p3 { width: 120px; height: 78px; top: 25px; left: 170px; }
-.fluffy-cloud.cloud-a .p4 { width: 250px; height: 55px; top: 55px; left: 35px; border-radius: 28px; }
+.fluffy-cloud.cloud-a .p1 { width: 46px; height: 30px; top: 8px; left: 4px; }
+.fluffy-cloud.cloud-a .p2 { width: 56px; height: 36px; top: 1px; left: 28px; }
+.fluffy-cloud.cloud-a .p3 { width: 44px; height: 28px; top: 9px; left: 62px; }
+.fluffy-cloud.cloud-a .p4 { width: 90px; height: 20px; top: 20px; left: 12px; border-radius: 10px; }
 
-/* Cloud B: Travels WNW -> ESE across middle sea */
+/* Cloud B: Smaller distant cloud drifting across mid-lower horizon (~90px wide) */
 .fluffy-cloud.cloud-b {
-  width: 380px;
-  height: 145px;
-  top: 52%;
-  left: 0;
-  animation: floatCloudWNWtoESE 50s linear infinite 12s;
-  opacity: 0.68;
+  width: 90px;
+  height: 36px;
+  top: 62%;
+  animation: floatCloudB 54s linear infinite 24s;
+  opacity: 0.35;
 }
 
-.fluffy-cloud.cloud-b .p1 { width: 145px; height: 92px; top: 26px; left: 15px; }
-.fluffy-cloud.cloud-b .p2 { width: 190px; height: 118px; top: 7px; left: 95px; }
-.fluffy-cloud.cloud-b .p3 { width: 135px; height: 86px; top: 28px; left: 215px; }
-.fluffy-cloud.cloud-b .p4 { width: 300px; height: 62px; top: 68px; left: 45px; border-radius: 31px; }
+.fluffy-cloud.cloud-b .p1 { width: 36px; height: 24px; top: 6px; left: 3px; }
+.fluffy-cloud.cloud-b .p2 { width: 44px; height: 28px; top: 1px; left: 22px; }
+.fluffy-cloud.cloud-b .p3 { width: 34px; height: 22px; top: 7px; left: 50px; }
+.fluffy-cloud.cloud-b .p4 { width: 70px; height: 16px; top: 16px; left: 10px; border-radius: 8px; }
 
-/* Cloud C: Straight Westerly Flow across high center */
-.fluffy-cloud.cloud-c {
-  width: 270px;
-  height: 115px;
-  top: 28%;
-  left: 0;
-  animation: floatCloudWestToEast 38s linear infinite 20s;
-  opacity: 0.72;
-}
-
-.fluffy-cloud.cloud-c .p1 { width: 110px; height: 70px; top: 18px; left: 10px; }
-.fluffy-cloud.cloud-c .p2 { width: 140px; height: 88px; top: 4px; left: 65px; }
-.fluffy-cloud.cloud-c .p3 { width: 105px; height: 70px; top: 20px; left: 145px; }
-.fluffy-cloud.cloud-c .p4 { width: 205px; height: 46px; top: 48px; left: 30px; border-radius: 23px; }
-
-/* Cloud D: Diagonal drifter NW -> SE */
-.fluffy-cloud.cloud-d {
-  width: 330px;
-  height: 130px;
-  top: 2%;
-  left: 0;
-  animation: floatCloudNWtoSE 56s linear infinite 6s;
-  opacity: 0.62;
-}
-
-.fluffy-cloud.cloud-d .p1 { width: 130px; height: 82px; top: 22px; left: 12px; }
-.fluffy-cloud.cloud-d .p2 { width: 165px; height: 105px; top: 5px; left: 82px; }
-.fluffy-cloud.cloud-d .p3 { width: 120px; height: 78px; top: 24px; left: 185px; }
-.fluffy-cloud.cloud-d .p4 { width: 260px; height: 56px; top: 58px; left: 35px; border-radius: 28px; }
-
-/* Travel across full screen: Starts off-screen left, exits off-screen right */
-@keyframes floatCloudWSWtoENE {
+/* Continuous Screen-to-Screen Flow: Enters off-screen left, exits off-screen right */
+@keyframes floatCloudA {
   0% {
-    transform: translate(-380px, 40px);
+    transform: translate(-160px, 0);
     opacity: 0;
   }
   6% {
-    opacity: 0.78;
+    opacity: 0.45;
   }
   94% {
-    opacity: 0.78;
+    opacity: 0.45;
   }
   100% {
-    transform: translate(calc(100vw + 380px), -30px);
+    transform: translate(calc(100vw + 200px), 15px);
     opacity: 0;
   }
 }
 
-@keyframes floatCloudWNWtoESE {
+@keyframes floatCloudB {
   0% {
-    transform: translate(-450px, -20px);
+    transform: translate(-160px, 0);
     opacity: 0;
   }
   6% {
-    opacity: 0.68;
+    opacity: 0.35;
   }
   94% {
-    opacity: 0.68;
+    opacity: 0.35;
   }
   100% {
-    transform: translate(calc(100vw + 450px), 50px);
+    transform: translate(calc(100vw + 200px), -15px);
     opacity: 0;
   }
 }
 
-@keyframes floatCloudWestToEast {
-  0% {
-    transform: translate(-320px, 0);
-    opacity: 0;
-  }
-  6% {
-    opacity: 0.72;
-  }
-  94% {
-    opacity: 0.72;
-  }
-  100% {
-    transform: translate(calc(100vw + 320px), 0);
-    opacity: 0;
-  }
-}
-
-@keyframes floatCloudNWtoSE {
-  0% {
-    transform: translate(-400px, -30px);
-    opacity: 0;
-  }
-  6% {
-    opacity: 0.62;
-  }
-  94% {
-    opacity: 0.62;
-  }
-  100% {
-    transform: translate(calc(100vw + 400px), 60px);
-    opacity: 0;
-  }
-}
-
-/* 2. Realistic Coastal Birds across the Full Screen Horizon */
+/* 2. Tiny Distant Seabirds Gliding across Horizon */
 .bird-flight-group {
   position: absolute;
   top: 0;
-  left: 0;
+  left: -150px;
   width: 100%;
   height: 100%;
+  pointer-events: none;
+  animation-fill-mode: backwards;
 }
+
+.flight-path-sky {
+  animation: pathSkyBirds 48s linear infinite 14s;
+}
+
+.flight-path-sky .bird-1 { top: 18%; left: 0px; }
+.flight-path-sky .bird-2 { top: 21%; left: -22px; transform: scale(0.8); }
 
 .seabird {
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 10px 6px rgba(10, 20, 30, 0.18));
+  opacity: 0.5;
 }
 
 .seabird .wing {
-  width: 8.5px;
-  height: 3px;
-  border-top: 2px solid #ffffff;
+  width: 5px;
+  height: 2px;
+  border-top: 1.5px solid #ffffff;
   border-radius: 50% 50% 0 0;
 }
 
 .seabird .wing.left {
   transform-origin: right bottom;
   transform: rotate(-18deg);
-  animation: flapLeft 0.6s ease-in-out infinite alternate;
+  animation: flapLeft 0.55s ease-in-out infinite alternate;
 }
 
 .seabird .wing.right {
   transform-origin: left bottom;
   transform: rotate(18deg);
-  animation: flapRight 0.6s ease-in-out infinite alternate;
+  animation: flapRight 0.55s ease-in-out infinite alternate;
 }
 
 @keyframes flapLeft {
-  0% { transform: rotate(-24deg); }
-  100% { transform: rotate(26deg); }
+  0% { transform: rotate(-22deg); }
+  100% { transform: rotate(24deg); }
 }
 
 @keyframes flapRight {
-  0% { transform: rotate(24deg); }
-  100% { transform: rotate(-26deg); }
+  0% { transform: rotate(22deg); }
+  100% { transform: rotate(-24deg); }
 }
 
-/* Trajectory 1: 3 Birds flying Southwest -> Northeast across entire screen */
-.flight-path-ne {
-  animation: pathSouthwestToNortheast 36s linear infinite;
-}
-
-.flight-path-ne .bird-1 { top: 40%; left: 0px; }
-.flight-path-ne .bird-2 { top: 44%; left: -40px; transform: scale(0.85); }
-.flight-path-ne .bird-3 { top: 36%; left: -70px; transform: scale(0.9); }
-
-@keyframes pathSouthwestToNortheast {
+@keyframes pathSkyBirds {
   0% {
-    transform: translate(-180px, calc(100vh - 120px));
+    transform: translate(-150px, 0);
     opacity: 0;
   }
   6% {
-    opacity: 0.95;
+    opacity: 0.5;
   }
   94% {
-    opacity: 0.95;
+    opacity: 0.5;
   }
   100% {
-    transform: translate(calc(100vw + 180px), -80px);
-    opacity: 0;
-  }
-}
-
-/* Trajectory 2: 2 Birds flying Northwest -> Southeast across entire screen */
-.flight-path-se {
-  animation: pathNorthwestToSoutheast 44s linear infinite 16s;
-}
-
-.flight-path-se .bird-1 { top: 22%; left: 0px; }
-.flight-path-se .bird-2 { top: 27%; left: -45px; transform: scale(0.8); }
-
-@keyframes pathNorthwestToSoutheast {
-  0% {
-    transform: translate(-180px, -40px);
-    opacity: 0;
-  }
-  6% {
-    opacity: 0.9;
-  }
-  94% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate(calc(100vw + 180px), calc(100vh + 40px));
-    opacity: 0;
-  }
-}
-
-/* Trajectory 3: Solo hawk soaring East -> West against prevailing winds */
-.flight-path-west {
-  animation: pathEastToWest 40s linear infinite 8s;
-}
-
-.flight-path-west .bird-solo {
-  top: 68%;
-  left: 0px;
-  transform: scale(1.15) scaleX(-1);
-}
-
-@keyframes pathEastToWest {
-  0% {
-    transform: translate(calc(100vw + 180px), 80px);
-    opacity: 0;
-  }
-  6% {
-    opacity: 0.95;
-  }
-  94% {
-    opacity: 0.95;
-  }
-  100% {
-    transform: translate(-180px, 140px);
+    transform: translate(calc(100vw + 200px), 40px);
     opacity: 0;
   }
 }

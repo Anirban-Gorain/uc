@@ -523,8 +523,7 @@ export function initAmbientAtmosphere() {
   if (!skyLayer) return;
 
   skyLayer.innerHTML = `
-    <!-- 1. Realistic White Clouds Floating Across the Full Screen Horizon -->
-    <!-- Cloud A: Drifting WSW -> ENE -->
+    <!-- Subtle, Small Ambient Clouds (High-Altitude Background Details) -->
     <div class="fluffy-cloud cloud-a">
       <div class="cloud-part p1"></div>
       <div class="cloud-part p2"></div>
@@ -532,7 +531,6 @@ export function initAmbientAtmosphere() {
       <div class="cloud-part p4"></div>
     </div>
 
-    <!-- Cloud B: Drifting WNW -> ESE -->
     <div class="fluffy-cloud cloud-b">
       <div class="cloud-part p1"></div>
       <div class="cloud-part p2"></div>
@@ -540,39 +538,10 @@ export function initAmbientAtmosphere() {
       <div class="cloud-part p4"></div>
     </div>
 
-    <!-- Cloud C: Gentle Westerly Flow W -> E -->
-    <div class="fluffy-cloud cloud-c">
-      <div class="cloud-part p1"></div>
-      <div class="cloud-part p2"></div>
-      <div class="cloud-part p3"></div>
-      <div class="cloud-part p4"></div>
-    </div>
-
-    <!-- Cloud D: High-Altitude Transverse Drifter NW -> SE -->
-    <div class="fluffy-cloud cloud-d">
-      <div class="cloud-part p1"></div>
-      <div class="cloud-part p2"></div>
-      <div class="cloud-part p3"></div>
-      <div class="cloud-part p4"></div>
-    </div>
-
-    <!-- 3. Dynamic Coastal Bird Flocks Across the Full Sky from Horizon to Horizon -->
-    <!-- Flight Flock 1: 3 Seabirds crossing SW -> NE -->
-    <div class="bird-flight-group flight-path-ne">
+    <!-- Distant Seabirds Gliding across Horizon -->
+    <div class="bird-flight-group flight-path-sky">
       <div class="seabird bird-1"><div class="wing left"></div><div class="wing right"></div></div>
       <div class="seabird bird-2"><div class="wing left"></div><div class="wing right"></div></div>
-      <div class="seabird bird-3"><div class="wing left"></div><div class="wing right"></div></div>
-    </div>
-
-    <!-- Flight Flock 2: 2 Seabirds crossing NW -> SE -->
-    <div class="bird-flight-group flight-path-se">
-      <div class="seabird bird-1"><div class="wing left"></div><div class="wing right"></div></div>
-      <div class="seabird bird-2"><div class="wing left"></div><div class="wing right"></div></div>
-    </div>
-
-    <!-- Flight Flock 3: Solo Hawk cruising East -> West against headwind -->
-    <div class="bird-flight-group flight-path-west">
-      <div class="seabird bird-solo"><div class="wing left"></div><div class="wing right"></div></div>
     </div>
   `;
 }
