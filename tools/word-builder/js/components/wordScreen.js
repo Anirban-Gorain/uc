@@ -1,7 +1,8 @@
 /**
  * @file wordScreen.js
  * @description Modular Netflix-style curriculum modal featuring granular DOM updates,
- * keyboard accessibility, spaced progress synchronization, and responsive floor navigation.
+ * keyboard accessibility, spaced progress synchronization, and responsive floor navigation
+ * tailored for both vertical (portrait) and horizontal (landscape) mobile viewports.
  */
 
 import {
@@ -78,11 +79,24 @@ class WordScreenModal {
 
     this.overlay.innerHTML = `
       <div class="word-modal" role="dialog" aria-modal="true" aria-labelledby="modal-building-title">
-        <button class="close-btn" id="modal-close-btn" aria-label="Close Modal">✖</button>
+        <!-- Desktop / Landscape Floating Close Button -->
+        <button class="close-btn close-btn-desktop" id="modal-close-btn" aria-label="Close Modal">✖</button>
         
-        <!-- Left: Floor Navigation Sidebar -->
+        <!-- Dedicated Top Bar for Mobile Portrait -->
+        <header class="modal-mobile-bar">
+          <div class="mobile-bar-meta">
+            <span class="mobile-bar-hook">${buildingHook}</span>
+            <h2 class="mobile-bar-title">${buildingName}</h2>
+          </div>
+          <button class="close-btn mobile-close-btn" id="modal-mobile-close-btn" aria-label="Close Modal">✖</button>
+        </header>
+
+        <!-- Left: Floor Navigation Sidebar / Mobile Carousel -->
         <aside class="modal-left" aria-label="Building Floors">
-          <div class="levels-title">Floors</div>
+          <div class="levels-header">
+            <span class="levels-title">Floors</span>
+            <span class="levels-count" id="modal-floors-count"></span>
+          </div>
           <div class="levels-list" id="modal-floors-list"></div>
         </aside>
 
@@ -91,7 +105,7 @@ class WordScreenModal {
           <div class="cinema-overlay"></div>
 
           <div class="modal-content-stack">
-            <!-- Header Block -->
+            <!-- Header Block (Desktop & Landscape) -->
             <div class="top-header-block">
               <div class="building-hook-top">${buildingHook}</div>
               <h1 class="building-title-top" id="modal-building-title">${buildingName}</h1>
@@ -99,7 +113,10 @@ class WordScreenModal {
 
             <!-- Situation / Mission Card -->
             <div class="mission-block">
-              <div class="mission-label" id="modal-mission-label">Situation</div>
+              <div class="mission-header-row">
+                <div class="mission-label" id="modal-mission-label">Situation</div>
+                <span class="floor-badge-pill" id="modal-floor-badge">Floor 01</span>
+              </div>
               <p class="mission-description" id="modal-mission-text"></p>
             </div>
 
@@ -141,9 +158,12 @@ class WordScreenModal {
     // Cache dynamic DOM elements for O(1) selective updates
     this.dom = {
       closeBtn: this.overlay.querySelector("#modal-close-btn"),
+      mobileCloseBtn: this.overlay.querySelector("#modal-mobile-close-btn"),
       floorsList: this.overlay.querySelector("#modal-floors-list"),
+      floorsCount: this.overlay.querySelector("#modal-floors-count"),
       stage: this.overlay.querySelector("#modal-cinema-stage"),
       missionLabel: this.overlay.querySelector("#modal-mission-label"),
+      floorBadge: this.overlay.querySelector("#modal-floor-badge"),
       missionText: this.overlay.querySelector("#modal-mission-text"),
       wordsRow: this.overlay.querySelector("#modal-words-row"),
       loadPromptBtn: this.overlay.querySelector("#modal-load-prompt-btn"),
@@ -159,8 +179,27 @@ class WordScreenModal {
    * @private
    */
   _bindEvents() {
-    // Close button
-    this.dom.closeBtn.addEventListener("click", () => this.close());
+    // Close button listeners (both desktop and mobile)
+    this.overlay.querySelectorAll(".close-btn").forEach((btn) => {
+      btn.addEventListener("click", () => this.close());
+    });
+
+    // Horizontal wheel scrolling support for floor track on laptops/trackpads
+    if (this.dom.floorsList) {
+      this.dom.floorsList.addEventListener(
+        "wheel",
+        (e) => {
+          if (
+            this.dom.floorsList.scrollWidth > this.dom.floorsList.clientWidth &&
+            Math.abs(e.deltaY) > Math.abs(e.deltaX)
+          ) {
+            e.preventDefault();
+            this.dom.floorsList.scrollLeft += e.deltaY;
+          }
+        },
+        { passive: false }
+      );
+    }
 
     // Sidebar navigation via event delegation
     this.dom.floorsList.addEventListener("click", (e) => {
@@ -227,6 +266,9 @@ class WordScreenModal {
 
     const floorNum = currentFloor.floorNumber || this.activeFloorIndex + 1;
     this.dom.missionLabel.textContent = `Situation • Floor 0${floorNum}`;
+    if (this.dom.floorBadge) {
+      this.dom.floorBadge.textContent = `Floor 0${floorNum}`;
+    }
     this.dom.missionText.textContent = currentFloor.mission || "";
 
     // 3. Update Vocabulary Pills
@@ -245,6 +287,18 @@ class WordScreenModal {
     this.dom.verifyCluster.classList.add("hidden");
     this.dom.codeInput.value = "";
     this.dom.feedback.innerHTML = "";
+
+    // 5. Auto-scroll active card into view smoothly
+    setTimeout(() => {
+      const activeCard = this.dom.floorsList?.querySelector(".level-card.active");
+      if (activeCard) {
+        activeCard.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }, 40);
   }
 
   /**
@@ -252,6 +306,12 @@ class WordScreenModal {
    * @private
    */
   _updateSidebar(completed) {
+    const totalFloors = this.floors.length;
+    if (this.dom.floorsCount) {
+      const doneCount = completed.filter((id) => id.startsWith("floor_")).length;
+      this.dom.floorsCount.textContent = `${doneCount}/${totalFloors} Done`;
+    }
+
     this.dom.floorsList.innerHTML = this.floors
       .map((fl, idx) => {
         const floorId = `floor_${fl.floorNumber || idx + 1}`;
@@ -268,18 +328,27 @@ class WordScreenModal {
         const lockClass = isUnlocked ? "" : "locked";
 
         let icon = "🔒";
+        let statusText = "Locked";
         if (isDone) {
           icon = "✅";
+          statusText = "Completed";
         } else if (isUnlocked) {
           icon = "▶️";
+          statusText = "Available";
         }
 
         return `
           <div class="level-card ${isActive} ${isDone ? "completed" : ""} ${lockClass}" 
                data-index="${idx}" 
-               data-unlocked="${isUnlocked}">
-            <span>Floor 0${fl.floorNumber || idx + 1}</span>
-            <span>${icon}</span>
+               data-unlocked="${isUnlocked}"
+               role="button"
+               tabindex="${isUnlocked ? "0" : "-1"}"
+               aria-label="Floor 0${fl.floorNumber || idx + 1} (${statusText})">
+            <div class="level-card-left">
+              <span class="level-card-num">Floor 0${fl.floorNumber || idx + 1}</span>
+              <span class="level-card-status">${statusText}</span>
+            </div>
+            <span class="level-card-icon">${icon}</span>
           </div>
         `;
       })

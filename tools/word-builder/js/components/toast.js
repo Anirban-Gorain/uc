@@ -17,7 +17,7 @@ export function showToast({ icon = "🔒", message = "", duration = 2600 } = {})
   toast.innerHTML = `
     <div class="toast-content">
       <span class="toast-icon">${icon}</span>
-      <span>${message}</span>
+      <span class="toast-message">${message}</span>
     </div>
     <div class="toast-progress-bar" style="animation-duration: ${duration}ms;"></div>
   `;

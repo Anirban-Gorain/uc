@@ -170,6 +170,11 @@ export function zoomCamera(delta, anchorX = null, anchorY = null) {
  * and responsive physical mouse wheel zooming.
  */
 function handleWheel(event) {
+  // If curriculum modal or overlay is open, do not intercept wheel events
+  if (document.querySelector(".screen-overlay")) {
+    return;
+  }
+
   event.preventDefault();
 
   const coords = getNormalizedPointer(event);
@@ -226,6 +231,11 @@ function getPinchMidpoint(t1, t2) {
 }
 
 function handlePointerDown(e) {
+  // If curriculum modal or overlay is open, DO NOT process camera pointer events
+  if (document.querySelector(".screen-overlay")) {
+    return;
+  }
+
   // Clear any active focus outline on tap
   if (
     document.activeElement &&
@@ -279,8 +289,13 @@ function handlePointerDown(e) {
 }
 
 function handlePointerMove(e) {
-  // Prevent native mobile page bounce / pull-to-refresh while interacting with the map
-  if (e.cancelable && (camera.isDragging || (e.touches && e.touches.length >= 1))) {
+  // If curriculum modal or overlay is open, DO NOT intercept or block touch scrolling
+  if (document.querySelector(".screen-overlay")) {
+    return;
+  }
+
+  // Prevent native mobile page bounce / pull-to-refresh ONLY while interacting with the map
+  if (e.cancelable && (camera.isDragging || (e.touches && e.touches.length === 2))) {
     e.preventDefault();
   }
 
@@ -338,6 +353,16 @@ function handlePointerMove(e) {
 }
 
 function handlePointerUp(e) {
+  // If modal is open, clear camera drag flags
+  if (document.querySelector(".screen-overlay")) {
+    camera.isDragging = false;
+    camera.touchPinchDist = 0;
+    camera.touchPinchMidX = null;
+    camera.touchPinchMidY = null;
+    document.body.classList.remove("is-panning");
+    return;
+  }
+
   // Seamless handover: If 1 finger remains after releasing 1 finger of a pinch, continue panning
   if (e && e.touches && e.touches.length === 1) {
     camera.touchPinchDist = 0;

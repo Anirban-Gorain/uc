@@ -1,68 +1,132 @@
-/* Master Screen Backdrop */
+/* ==========================================================================
+   Master Screen Backdrop & Root Container
+   ========================================================================== */
 .screen-overlay {
   position: fixed;
   inset: 0;
-  background: #09090b;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(8, 9, 13, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 99990;
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  overflow: hidden;
+  touch-action: pan-x pan-y;
 }
 
-/* Netflix-Style Modal Box */
+/* ==========================================================================
+   Desktop / Standard Netflix-Style Modal Box
+   ========================================================================== */
 .word-modal {
   width: 92vw;
   max-width: 1250px;
   height: 88vh;
-  background: #111114;
-  border-radius: 14px;
+  background: #101117;
+  border-radius: 16px;
   display: flex;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.95);
-  border: 1px solid #222227;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.95),
+    0 0 40px rgba(255, 90, 0, 0.12);
+  border: 1px solid #202330;
 }
 
-/* Close Button */
+/* Close Button (Universal Base Styles) */
 .close-btn {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: rgba(18, 18, 22, 0.85);
+  background: rgba(18, 20, 28, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #f4f4f5;
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 17px;
   cursor: pointer;
   touch-action: manipulation;
-  z-index: 25;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.close-btn:hover {
+.close-btn:hover,
+.close-btn:active {
   background: #ff5a00;
   border-color: #ff5a00;
   color: #ffffff;
-  transform: scale(1.06);
+  transform: scale(1.08);
+  box-shadow: 0 0 16px rgba(255, 90, 0, 0.5);
 }
 
-/* LEFT PANEL (Floors Navigation) */
+/* Floating Desktop Close Button */
+.close-btn-desktop {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 50;
+}
+
+/* Hidden by default on Desktop; activated in Mobile Portrait */
+.modal-mobile-bar {
+  display: none;
+}
+
+/* ==========================================================================
+   LEFT PANEL: Floors Navigation (Desktop Sidebar)
+   ========================================================================== */
 .modal-left {
-  width: 26%;
-  background: #0d0d10;
-  padding: 24px;
+  width: 28%;
+  background: #0c0d12;
+  padding: 24px 20px;
   overflow-y: auto;
-  border-right: 1px solid #1f1f24;
+  overflow-x: hidden;
+  border-right: 1px solid #1c1f2b;
   flex-shrink: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar */
+.modal-left::-webkit-scrollbar,
+.modal-right::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.modal-left::-webkit-scrollbar-track,
+.modal-right::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 999px;
+}
+
+.modal-left::-webkit-scrollbar-thumb,
+.modal-right::-webkit-scrollbar-thumb {
+  background: rgba(255, 90, 0, 0.45);
+  border-radius: 999px;
+}
+
+.modal-left::-webkit-scrollbar-thumb:hover,
+.modal-right::-webkit-scrollbar-thumb:hover {
+  background: #ff5a00;
+}
+
+.levels-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 .levels-title {
@@ -71,43 +135,76 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-top: 0;
-  margin-bottom: 20px;
+}
+
+.levels-count {
+  color: #71717a;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .levels-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .level-card {
-  background: #17171c;
-  padding: 16px;
-  border-radius: 8px;
+  background: #151720;
+  padding: 14px 16px;
+  border-radius: 10px;
   color: #a1a1aa;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  border: 1px solid transparent;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  border: 1px solid #222533;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.level-card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.level-card-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+
+.level-card-status {
+  font-size: 11px;
+  color: #71717a;
+  font-weight: 600;
+}
+
+.level-card-icon {
+  font-size: 16px;
 }
 
 .level-card:hover:not(.locked) {
-  background: #202027;
+  background: #1d202d;
   color: #ffffff;
-  border-color: rgba(255, 90, 0, 0.4);
+  border-color: rgba(255, 90, 0, 0.45);
+  transform: translateX(2px);
 }
 
 .level-card.active {
-  background: #221a16;
+  background: #231b17;
   border-color: #ff5a00;
   color: #ffffff;
-  box-shadow: inset 3px 0 0 #ff5a00;
+  box-shadow:
+    inset 3px 0 0 #ff5a00,
+    0 4px 18px rgba(255, 90, 0, 0.15);
+}
+
+.level-card.active .level-card-status {
+  color: #ff8c42;
 }
 
 .level-card.completed {
@@ -115,20 +212,22 @@
 }
 
 .level-card.locked {
-  opacity: 0.45;
+  opacity: 0.42;
   cursor: not-allowed;
-  background: #111114;
-  border-color: #1a1a20;
+  background: #111219;
+  border-color: #1a1c26;
 }
 
 .level-card.locked:hover {
-  background: #111114;
-  color: #71717a;
+  background: #111219;
+  transform: none;
 }
 
-/* RIGHT PANEL (Cinema Stage) */
+/* ==========================================================================
+   RIGHT PANEL: Visual Cinema Stage (Desktop)
+   ========================================================================== */
 .modal-right {
-  width: 74%;
+  width: 72%;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -137,6 +236,9 @@
   background-repeat: no-repeat;
   transition: background-image 0.3s ease;
   overflow-y: auto;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cinema-overlay {
@@ -144,9 +246,9 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(10, 10, 13, 0.94) 0%,
-    rgba(10, 10, 13, 0.72) 45%,
-    rgba(10, 10, 13, 0.96) 100%
+    rgba(9, 10, 14, 0.95) 0%,
+    rgba(9, 10, 14, 0.74) 45%,
+    rgba(9, 10, 14, 0.97) 100%
   );
   z-index: 1;
   pointer-events: none;
@@ -177,32 +279,55 @@
 
 .building-title-top {
   color: #ffffff;
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 900;
   letter-spacing: -0.5px;
   margin: 0;
   line-height: 1.1;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.85);
 }
 
 .mission-block {
   margin-bottom: 26px;
   max-width: 90%;
+  background: rgba(18, 20, 28, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px 22px;
+  backdrop-filter: blur(10px);
+}
+
+.mission-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .mission-label {
-  color: #71717a;
+  color: #a1a1aa;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-bottom: 6px;
   font-weight: 700;
 }
 
+.floor-badge-pill {
+  background: rgba(255, 90, 0, 0.15);
+  color: #ff8c42;
+  border: 1px solid rgba(255, 90, 0, 0.45);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .mission-description {
-  color: #d4d4d8;
+  color: #f4f4f5;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
   font-weight: 400;
 }
@@ -212,7 +337,7 @@
 }
 
 .word-tags-title {
-  color: #71717a;
+  color: #a1a1aa;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -223,20 +348,22 @@
 .word-pills-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 .word-pill {
   background: rgba(255, 90, 0, 0.12);
   border: 1px solid rgba(255, 90, 0, 0.45);
   color: #ff8c42;
-  padding: 10px 22px;
+  padding: 10px 20px;
   border-radius: 999px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.3px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .word-pill:hover {
@@ -244,11 +371,11 @@
   color: #ffffff;
   border-color: #ff5a00;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 90, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 90, 0, 0.45);
 }
 
 .action-stage {
-  margin-top: 40px;
+  margin-top: 36px;
   padding-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -264,23 +391,27 @@
 }
 
 .btn-primary-orange {
-  background: #ff5a00;
+  background: linear-gradient(135deg, #ff6b1a 0%, #ff5a00 100%);
   color: #ffffff;
   border: none;
   padding: 14px 28px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 0.5px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 18px rgba(255, 90, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(255, 90, 0, 0.35);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
-.btn-primary-orange:hover {
-  background: #ff6f1f;
+.btn-primary-orange:hover,
+.btn-primary-orange:active {
+  background: linear-gradient(135deg, #ff7a2e 0%, #ff640a 100%);
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(255, 90, 0, 0.5);
+  box-shadow: 0 6px 26px rgba(255, 90, 0, 0.5);
 }
 
 .loading-pulse {
@@ -291,12 +422,8 @@
 }
 
 @keyframes pulse-orange {
-  from {
-    opacity: 0.6;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0.6; }
+  to { opacity: 1; }
 }
 
 .verify-cluster {
@@ -310,15 +437,16 @@
 }
 
 .code-field {
-  background: #18181b;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
+  background: #181922;
+  border: 1px solid #36394a;
+  border-radius: 10px;
   color: #ffffff;
   padding: 13px 18px;
   font-size: 15px;
   width: 220px;
   outline: none;
   transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
 .code-field:focus {
@@ -326,19 +454,23 @@
 }
 
 .btn-verify {
-  background: #27272a;
-  border: 1px solid #3f3f46;
+  background: #232635;
+  border: 1px solid #36394a;
   color: #ffffff;
   padding: 13px 22px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
-.btn-verify:hover {
-  background: #3f3f46;
+.btn-verify:hover,
+.btn-verify:active {
+  background: #32364c;
   border-color: #71717a;
 }
 
@@ -348,10 +480,9 @@
 }
 
 /* ==========================================================================
-   Mobile Responsive Modal Layout & Touch Accessibility
+   MOBILE PORTRAIT (Vertical View - Native App Aesthetic)
    ========================================================================== */
-
-@media screen and (max-width: 820px) {
+@media screen and (max-width: 820px) and (orientation: portrait), screen and (max-width: 640px) {
   .screen-overlay {
     padding: 0;
   }
@@ -362,25 +493,95 @@
     height: 100vh;
     height: 100dvh;
     max-width: 100vw;
+    max-height: 100dvh;
     border-radius: 0;
     border: none;
     flex-direction: column;
+    box-shadow: none;
   }
 
-  /* Compact Horizontal Floor Selector on Mobile */
+  /* Hide floating desktop close button */
+  .close-btn-desktop {
+    display: none !important;
+  }
+
+  /* Dedicated Mobile Top App Bar */
+  .modal-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: max(14px, env(safe-area-inset-top) + 6px) 18px 12px 18px;
+    background: #0d0e14;
+    border-bottom: 1px solid #1c1f2b;
+    z-index: 50;
+    flex-shrink: 0;
+  }
+
+  .mobile-bar-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding-right: 12px;
+  }
+
+  .mobile-bar-hook {
+    color: #ff5a00;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-bar-title {
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 800;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .modal-mobile-bar .close-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Horizontal Floor Navigation Carousel */
   .modal-left {
     width: 100%;
-    max-height: 140px;
-    padding: 14px 16px;
+    max-height: none;
+    height: auto;
+    padding: 10px 16px 14px 16px;
+    background: #111219;
     border-right: none;
-    border-bottom: 1px solid #1f1f24;
+    border-bottom: 1px solid #1c1f2b;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    flex-shrink: 0;
+  }
+
+  .levels-header {
+    margin-bottom: 8px;
   }
 
   .levels-title {
-    margin-bottom: 8px;
+    font-size: 11px;
+  }
+
+  .levels-count {
     font-size: 11px;
   }
 
@@ -388,79 +589,116 @@
     flex-direction: row;
     gap: 10px;
     width: max-content;
+    padding-bottom: 4px;
+    touch-action: pan-x;
   }
 
   .level-card {
     padding: 10px 14px;
-    font-size: 14px;
+    min-width: 130px;
     min-height: 44px;
-    min-width: 110px;
+    border-radius: 10px;
+    background: #171822;
+    border: 1px solid #252837;
     white-space: nowrap;
-    touch-action: manipulation;
+  }
+
+  .level-card-num {
+    font-size: 13px;
+  }
+
+  .level-card-status {
+    font-size: 10px;
   }
 
   .level-card.active {
-    box-shadow: inset 0 -3px 0 #ff5a00;
+    background: #221a16;
+    border-color: #ff5a00;
+    box-shadow: 0 0 16px rgba(255, 90, 0, 0.25);
   }
 
-  /* Expanded Cinema Stage on Mobile */
+  /* Right Panel / Content Stage in Portrait */
   .modal-right {
     width: 100%;
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .top-header-block {
+    display: none; /* Shown in modal-mobile-bar */
   }
 
   .modal-content-stack {
-    padding: 24px 20px 40px 20px;
+    padding: 18px 16px max(24px, env(safe-area-inset-bottom) + 16px) 16px;
+    min-height: auto;
   }
 
-  .building-title-top {
-    font-size: 28px;
-  }
-
-  .building-hook-top {
-    font-size: 11px;
+  .mission-block {
+    max-width: 100%;
+    background: rgba(18, 20, 28, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
   }
 
   .mission-description {
-    font-size: 14px;
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .word-tags-block {
+    margin-bottom: 20px;
+  }
+
+  .word-pills-row {
+    gap: 8px;
   }
 
   .word-pill {
-    padding: 8px 16px;
-    font-size: 14px;
-    touch-action: manipulation;
+    padding: 8px 15px;
+    font-size: 13.5px;
+    min-height: 38px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
   }
 
   .action-stage {
-    margin-top: 24px;
-    padding-top: 18px;
+    margin-top: 10px;
+    padding-top: 16px;
   }
 
   .action-row {
     flex-direction: column;
     align-items: stretch;
-    width: 100%;
+    gap: 12px;
   }
 
   .btn-primary-orange {
     width: 100%;
-    min-height: 48px;
+    min-height: 50px;
     font-size: 16px;
-    touch-action: manipulation;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .verify-cluster {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
 
   .code-field {
     width: 100%;
     min-height: 48px;
     font-size: 16px; /* Prevents iOS auto-zoom on input focus */
+    border-radius: 12px;
     box-sizing: border-box;
   }
 
@@ -468,6 +706,169 @@
     width: 100%;
     min-height: 48px;
     font-size: 16px;
-    touch-action: manipulation;
+    border-radius: 12px;
+  }
+}
+
+/* ==========================================================================
+   MOBILE LANDSCAPE (Horizontal View - High-Efficiency Split Screen)
+   ========================================================================== */
+@media screen and (max-height: 540px) and (orientation: landscape) {
+  .screen-overlay {
+    padding: 0;
+  }
+
+  .word-modal {
+    width: 100vw;
+    width: 100dvw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+    flex-direction: row;
+    box-shadow: none;
+  }
+
+  /* Hide portrait mobile bar in landscape */
+  .modal-mobile-bar {
+    display: none !important;
+  }
+
+  /* Show floating close button pinned to top right with safe-area spacing */
+  .close-btn-desktop {
+    display: flex !important;
+    position: absolute;
+    top: max(10px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 15px;
+    z-index: 50;
+  }
+
+  /* Left column: Compact vertical floor list */
+  .modal-left {
+    width: 34%;
+    max-width: 250px;
+    height: 100%;
+    padding: 14px 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 1px solid #1c1f2b;
+    border-bottom: none;
+    flex-shrink: 0;
+  }
+
+  .levels-header {
+    margin-bottom: 10px;
+  }
+
+  .levels-title {
+    font-size: 11px;
+  }
+
+  .levels-list {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .level-card {
+    padding: 10px 12px;
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .level-card-num {
+    font-size: 12.5px;
+  }
+
+  .level-card-status {
+    font-size: 10px;
+  }
+
+  /* Right column: Scrollable cinema stage */
+  .modal-right {
+    width: 66%;
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .modal-content-stack {
+    padding: 16px 20px max(18px, env(safe-area-inset-bottom) + 10px) 20px;
+    min-height: auto;
+  }
+
+  .top-header-block {
+    margin-bottom: 14px;
+    padding-right: 48px; /* Clear close button */
+  }
+
+  .building-title-top {
+    font-size: 22px;
+  }
+
+  .building-hook-top {
+    font-size: 10px;
+  }
+
+  .mission-block {
+    max-width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+
+  .mission-description {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .word-tags-block {
+    margin-bottom: 14px;
+  }
+
+  .word-pills-row {
+    gap: 6px;
+  }
+
+  .word-pill {
+    padding: 6px 12px;
+    font-size: 12.5px;
+  }
+
+  .action-stage {
+    margin-top: 14px;
+    padding-top: 12px;
+    gap: 10px;
+  }
+
+  .action-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .btn-primary-orange {
+    padding: 10px 18px;
+    font-size: 13.5px;
+    min-height: 40px;
+  }
+
+  .code-field {
+    padding: 10px 14px;
+    font-size: 14px;
+    min-height: 40px;
+    width: 170px;
+  }
+
+  .btn-verify {
+    padding: 10px 16px;
+    font-size: 13.5px;
+    min-height: 40px;
   }
 }
