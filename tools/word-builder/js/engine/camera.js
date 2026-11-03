@@ -179,8 +179,8 @@ function handleWheel(event) {
   // On standard desktop browsers, mouse wheel default behavior in maps is ZOOM.
   // If user holds Shift, or is swiping both axes on a trackpad, treat as PAN.
   if (isPureVertical && hasSubstantialY && !event.shiftKey) {
-    // Proportional zoom step based on scroll direction
-    const factor = event.deltaY < 0 ? 1.15 : 1 / 1.15;
+    // Responsive zoom step based on scroll direction
+    const factor = event.deltaY < 0 ? 1.25 : 1 / 1.25;
     zoomCameraByFactor(factor, coords.x, coords.y);
   } else {
     // Trackpad two-finger swipe or Shift-scroll pans the map
@@ -315,12 +315,12 @@ export function registerCameraEvents() {
     setTimeout(handleResizePreserveZoom, 200),
   );
 
-  // HUD Controls (using smooth proportional zoom)
+  // HUD Controls (responsive, clear zoom step)
   dom.zoomInBtn.addEventListener("click", () =>
-    zoomCameraByFactor(1.2),
+    zoomCameraByFactor(1.35),
   );
   dom.zoomOutBtn.addEventListener("click", () =>
-    zoomCameraByFactor(1 / 1.2),
+    zoomCameraByFactor(1 / 1.35),
   );
   dom.fitMapBtn.addEventListener("click", fitMapToViewport);
 }

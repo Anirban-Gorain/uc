@@ -523,12 +523,7 @@ export function initAmbientAtmosphere() {
   if (!skyLayer) return;
 
   skyLayer.innerHTML = `
-    <!-- 1. High-Altitude Drifting Cloud Shadows -->
-    <div class="cloud-shadow shadow-1"></div>
-    <div class="cloud-shadow shadow-2"></div>
-    <div class="cloud-shadow shadow-3"></div>
-
-    <!-- 2. Realistic White Clouds Floating in Multiple Natural Wind Directions -->
+    <!-- 1. Realistic White Clouds Floating Across the Full Screen Horizon -->
     <!-- Cloud A: Drifting WSW -> ENE -->
     <div class="fluffy-cloud cloud-a">
       <div class="cloud-part p1"></div>
