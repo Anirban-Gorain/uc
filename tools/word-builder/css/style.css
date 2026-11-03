@@ -46,24 +46,48 @@ body {
   height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
+  touch-action: none;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
-  user-select: none;
-  -webkit-user-select: none;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-touch-callout: none !important;
 }
 
 /* Eliminate browser link ghost-dragging on images and svgs */
 img,
 svg,
+canvas,
 .slot-building-img {
-  -webkit-user-drag: none;
-  user-drag: none;
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
 }
 
-/* Remove default focus outline on click/tap while keeping keyboard focus accessibility */
-:focus:not(:focus-visible) {
-  outline: none;
+/* Suppress all focus outlines and tap highlights across non-form interactive elements */
+:focus,
+:focus-visible,
+:focus-within,
+*:focus,
+*:focus-visible,
+*:focus-within {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+
+/* Explicit accessibility outline ONLY for genuine form fields */
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #38bdf8 !important;
+  outline-offset: 2px;
 }
 
 /* While panning, lock cursor across every element on the entire page */
@@ -186,8 +210,12 @@ body {
   touch-action: none;
   overscroll-behavior: none;
   -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
   user-select: none !important;
   -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  outline: none !important;
 }
 
 .world {
@@ -200,8 +228,12 @@ body {
   will-change: transform;
   touch-action: none;
   -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
   user-select: none !important;
   -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  outline: none !important;
 }
 
 /* ==========================================================================
@@ -218,15 +250,26 @@ body {
 .island-entity {
   position: absolute;
   -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   outline: none !important;
   user-select: none !important;
   -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
   touch-action: none;
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
-.island-entity > * {
-  pointer-events: none;
+.island-entity,
+.island-entity * {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  outline: none !important;
 }
 
 .sand-coast {
@@ -263,18 +306,30 @@ body {
   position: absolute;
   inset: 0;
   z-index: 15;
-  pointer-events: none;
+  pointer-events: none !important;
   opacity: 1;
   transition: opacity 0.2s ease;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
 }
 
 .grid-overlay.hidden {
-  opacity: 0;
+  opacity: 0 !important;
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 .island-grid-container {
   position: absolute;
   display: grid;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
 }
 
 .grid-cell-guide {
@@ -287,6 +342,12 @@ body {
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.4);
   font-family: monospace;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
 }
 
 /* ==========================================================================
@@ -330,14 +391,33 @@ body {
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   -webkit-touch-callout: none !important;
   user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
   outline: none !important;
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
     box-shadow 0.2s ease;
   z-index: 10;
+}
+
+.map-slot,
+.map-slot * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+
+.map-slot * {
+  pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {

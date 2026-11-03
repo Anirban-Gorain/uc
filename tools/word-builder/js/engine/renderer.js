@@ -163,6 +163,10 @@ function createOrganicCoastlineSvg(width, height) {
       width: ${svgW}px;
       height: ${svgH}px;
       pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
       z-index: 1;
       overflow: visible;
     ">
@@ -237,6 +241,10 @@ export function renderIslands() {
            background-repeat: no-repeat;
            border-radius: ${island.sandRadius}px;
            z-index: 3;
+           pointer-events: none;
+           user-select: none;
+           -webkit-user-select: none;
+           -webkit-tap-highlight-color: transparent;
          "></div>`
       : "";
 
@@ -255,6 +263,17 @@ export function renderIslands() {
 }
 
 export function renderGridOverlays() {
+  dom.gridOverlay.innerHTML = "";
+
+  if (!MAP_CONFIG.showGrid) {
+    dom.gridOverlay.classList.add("hidden");
+    dom.gridOverlay.style.display = "none";
+    return;
+  }
+
+  dom.gridOverlay.style.display = "";
+  dom.gridOverlay.classList.remove("hidden");
+
   const fragment = document.createDocumentFragment();
 
   MAP_CONFIG.islands.forEach((island) => {
@@ -283,9 +302,7 @@ export function renderGridOverlays() {
     fragment.appendChild(gridContainer);
   });
 
-  dom.gridOverlay.innerHTML = "";
   dom.gridOverlay.appendChild(fragment);
-  dom.gridOverlay.classList.toggle("hidden", !MAP_CONFIG.showGrid);
 }
 
 export function renderRoads() {

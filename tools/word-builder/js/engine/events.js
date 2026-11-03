@@ -18,9 +18,28 @@ export function initEvents() {
     console.warn("Revision check skipped:", err);
   }
 
+  const clearSelection = () => {
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")) {
+      return;
+    }
+    const sel = window.getSelection ? window.getSelection() : null;
+    if (sel) {
+      if (sel.empty) sel.empty();
+      if (sel.removeAllRanges) sel.removeAllRanges();
+    }
+    if (
+      activeEl &&
+      activeEl !== document.body &&
+      activeEl.tagName !== "INPUT" &&
+      activeEl.tagName !== "TEXTAREA"
+    ) {
+      activeEl.blur();
+    }
+  };
+
   // Prevent mobile browser multi-tap selection and contextual callouts on the entire map
   window.addEventListener("selectstart", (e) => {
-    // Allow text selection only inside editable form fields (like modal code inputs)
     if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) {
       return;
     }
@@ -34,6 +53,30 @@ export function initEvents() {
     e.preventDefault();
   }, { passive: false });
 
+  // Active defense: Instantly dissolve any text selection that mobile OS multi-tap attempts to create
+  document.addEventListener("selectionchange", () => {
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")) {
+      return;
+    }
+    const sel = window.getSelection ? window.getSelection() : null;
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+      sel.removeAllRanges();
+    }
+  });
+
+  window.addEventListener("touchend", clearSelection, { passive: true });
+  window.addEventListener("mouseup", clearSelection, { passive: true });
+
+  if (dom.viewport) {
+    // Prevent default mousedown to stop browser from initiating drag-selection or focus bounding boxes
+    dom.viewport.addEventListener("mousedown", (e) => {
+      if (e.target && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+      }
+    });
+  }
+
   if (!dom.buildingLayer) {
     console.error("dom.buildingLayer not found in DOM");
     return;
@@ -41,13 +84,7 @@ export function initEvents() {
 
   // Delegated click listener on the building parcels layer
   dom.buildingLayer.addEventListener("click", (e) => {
-    // Clear any text selection that mobile OS multi-tap may have created
-    if (window.getSelection) {
-      const sel = window.getSelection();
-      if (sel && sel.removeAllRanges) {
-        sel.removeAllRanges();
-      }
-    }
+    clearSelection();
 
     // Discriminate between panning/dragging the map vs clicking a building
     if (camera && camera.totalDragDist > 6) return;

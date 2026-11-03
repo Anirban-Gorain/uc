@@ -210,6 +210,16 @@ function getPinchMidpoint(t1, t2) {
 }
 
 function handlePointerDown(e) {
+  // Clear any active focus outline on tap
+  if (
+    document.activeElement &&
+    document.activeElement !== document.body &&
+    document.activeElement.tagName !== "INPUT" &&
+    document.activeElement.tagName !== "TEXTAREA"
+  ) {
+    document.activeElement.blur();
+  }
+
   if (e.touches && e.touches.length === 2) {
     camera.isDragging = false;
     document.body.classList.remove("is-panning");
@@ -273,6 +283,13 @@ function handlePointerUp() {
   camera.touchPinchDist = 0;
   document.body.classList.remove("is-panning");
   saveCameraState();
+
+  if (window.getSelection) {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+      sel.removeAllRanges();
+    }
+  }
 }
 
 export function registerCameraEvents() {
